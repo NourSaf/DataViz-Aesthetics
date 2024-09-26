@@ -1,0 +1,134 @@
+@import url("https://cdn.jsdelivr.net/npm/modern-normalize@2.0.0/modern-normalize.min.css");
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.12/latin.css");
+
+body {
+    font-family: "Inter", sans-serif;
+    background: #F7F7F7;
+    color: #333333;
+}
+
+h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1;
+    padding:0;
+    margin:0;
+}
+
+h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0;
+    margin:0;
+}
+
+p {
+    padding: 0.5rem 0 1rem 0;
+    margin: 0;
+}
+
+a {
+    color: #666666;
+}
+
+main {
+    padding: 30px;
+    max-width: 1200px;
+    margin:0 auto;
+}
+
+div.prompt {
+    padding-top:80px;
+}
+
+div.drawing-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 30px;
+}
+
+div.image-info {
+    padding-bottom:10px;
+    grid-column: 2 span;
+}
+
+div.image-preview {
+    position:relative;
+    height:0px;
+    padding-bottom:100%;
+    background-color: #DDDDDD;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+div.image-preview::after{
+    position:absolute;
+    top:8px;left:8px;
+    content:"Preview";
+    background:#BBBBBB;
+    padding:5px 12px;
+    border-radius: 90px;
+    color: #FFFFFF;
+    opacity: 0.8;
+}
+
+div.image-preview img {
+    position:absolute;
+    inset:0;
+    width: 100%; 
+    height: 100%;
+    object-fit: contain;
+}
+
+div.sketch {
+    position:relative;
+    background-color:#DDDDDD;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+div.sketch::after{
+    position:absolute;
+    top:8px;left:8px;
+    content:"Sketch";
+    background:#BBBBBB;
+    padding:5px 12px;
+    border-radius: 90px;
+    color: #FFFFFF;
+    opacity: 0.8;
+}
+
+div.sketch svg {
+    position:absolute;
+    z-index:800;
+}
+
+div.onion-skin {
+    position: absolute;
+    inset: 0;
+    opacity: 0.0;
+}
+
+div.onion-skin img {
+    position:absolute;
+    inset:0;
+    width: 100%; 
+    height: 100%;
+    object-fit: contain;
+}
+
+div.sketch input[type='checkbox']{
+    position:absolute;
+    top:8px;right:8px;
+    z-index: 900;
+    width: 20px;
+    height: 20px;
+}
+
+div.sketch:has(input[type='checkbox']:checked) div.onion-skin{
+    opacity:0.1;
+}
