@@ -6,7 +6,7 @@ const RESOURCE_URL = 'https://data.cityofnewyork.us/resource/tg4x-b46p.json';
 //async funciton to fetch the data from API link
 const dataLoad = async () => {
   const data = await d3.json(RESOURCE_URL);
-  console.log("✺–––▷  Permit Types Count",data)
+  console.log("✺–––▷  All Data From API ",data)
   return data
 };
 
