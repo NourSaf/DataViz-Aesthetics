@@ -8,7 +8,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
+    margin: 0;
 }
 
 p {
@@ -24,4 +24,35 @@ main {
     padding: 30px;
     max-width: 1200px;
     margin:0 auto;
+}
+
+
+.mainHeader{
+    font-family: monospace;
+    font-size: 2em;
+    margin-bottom: 2em;
+    font-weight: 800;
+    
+    
+    
+}
+
+.h2text{
+    font-size: 0.6em;
+    margin-bottom: 0.35em;
+    padding-left: 1em;
+    display: flex;
+    padding-top: 0.5em;
+}
+
+#app{
+    padding: 2em;
+}
+
+.h3text{
+    font-size: 0.8em;
+    margin-bottom: 0.35em;
+    padding-left: 1em;
+    color: #666666;
+    
 }

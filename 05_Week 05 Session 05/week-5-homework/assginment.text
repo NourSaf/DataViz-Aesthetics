@@ -1,0 +1,73 @@
+1. Find Totals for Each Film Permit Type:
+
+Implement a function that calculates the total number of permits issued for each type of film permit. 
+The function should return a summary showing each permit type and its corresponding total count.
+{
+  [Permit Type]: Total
+}
+
+
+2. Identify the Zip Code with the Most Film Permits:
+
+Develop a function that determines which zip code has the highest number of film permits issued. 
+The function should return the zip code and the total number of permits issued for that zip code.
+{
+  [Zip Code]: Total
+}
+
+
+3. Identify the Borough with the Most Film Permits:
+
+Develop a function that determines which borough has the highest number of film permits issued. 
+The function should return the borough and the total number of permits issued for that borough.
+{
+  [Borough Name]: Total
+}
+
+
+4. Group by Borough and Day of the Week:
+
+Write a function that groups the film permit data by borough and then by the day of the week. 
+This function should return a structure that easily allows for understanding the distribution of 
+film permits across different boroughs and days.
+{
+  [Day of the Week]: {
+     [Borough]: Array<Permits>
+  }
+}
+
+5. Group Permit Types by Weekend or Weekday:
+
+This would involve classifying each permit issue date as either a weekday or weekend, 
+then aggregating these into two categories. The function should return data indicating 
+whether filming tends to be more common during the week or on weekends, providing 
+insight into the scheduling preferences of film productions.
+{
+  Weekend: Array<Permits>
+  Weekday: Array<Permits>
+}
+
+dayAndBorough.forEach((boroughs, day) => {
+    const dayDiv = dayAndBoroughDiv
+      .append('div')
+      .attr('class', 'dayHeader')
+      .text(day);
+
+    dayDiv
+      .selectAll('h2')
+      .data(Array.from(boroughs))
+      .enter()
+      .append('h2')
+      .attr('class', 'h2text')
+      .text((d) => `${d[0]}: ${d[1]}`);
+  });
+
+6. Film permits by Hour:
+
+Find which hour of any given day is most common for a film permit to be made.
+{
+  1am: Total,
+  2am: Total,
+  3am: Total,
+  // ... etc
+}
