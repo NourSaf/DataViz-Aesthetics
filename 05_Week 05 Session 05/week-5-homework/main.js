@@ -12,8 +12,7 @@ const dataLoad = async () => {
 
 //main Funciton accessing the data -> console log and creates dynamic HTML elemnts.
 dataLoad().then((data) => {
-const app = d3
-  .select('#app')
+const app = d3.select('#app')
 
   // permit type ount –—> using grouping rollup method 
   const eventTypeCount = d3.rollup(
