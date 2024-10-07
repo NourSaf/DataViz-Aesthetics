@@ -40,20 +40,22 @@ dataFetch().then((data) => {
     }
   });
 })
-
 const myData = await dataFetch();
 
 console.log(" –> Complaint Type Count ", complaintType)
-// Group complaint types with values between 1 and 10 into "Other"
-// Group complaint types with values between 1 and 10 into "Other"
-let otherCount = 0;
-complaintType.forEach((value, key) => {
-  if (value >= 1 && value <= 10) {
-    otherCount += value;
-    complaintType.delete(key);
+
+
+//as the categories are too many I reduced the groups. 
+//Added OTHER Group, in which all complaints are calculated that has from one till six complaints
+let otherCount = 0; 
+complaintType.forEach( ( value, key ) => {
+  if ( value >= 1 && value <= 6){
+    otherCount += value
+    complaintType.delete(key)
   }
-});
-complaintType.set("Other", otherCount);
+})
+complaintType.set("Other", otherCount)
+console.log('this is others', {otherCount})
 
 //extract the categories and values from the data 
 const complaintCat = Array.from(complaintType.keys());
@@ -65,18 +67,42 @@ const color = d3.scaleOrdinal().domain(complaintCat).range(d3.schemeObservable10
 console.log("this is min & max",min,":", max)
 
 //creates dynamic elements in the DOM 
-const main = d3.select('#chartContainer')
+const main = d3
+  .select('#chartContainer')
+  .style("padding","2em")
+  .style("display", "flex")
+  .style("align-items", "center")
+  .style("flex-direction","column")
+  
+const legendContainer = d3
+  .select('.legend')
+  .style("display", "flex")
+  .style("align-items", "left")
+  .style("flex-direction","row")
+  .style("padding-left","525px")
 
 const header = 
   main
     .append("h1")
     .attr('class',"h1Header")
     .html('311 Service Requests')
+    .style("font-size","3.2em")
 
   main
     .append("h2")
     .attr('class',"h2Header")
     .html('Complaints between July and Oktober 2024')
+    .style("font-size","1.5em")
+  
+    main
+    .append("h2")
+    .attr('class',"h2Header")
+    .html('Chart by: Nour AL Safadi,<br>This bar chart visualization presents data from the 311-Service-Requests API, capturing all service requests made between July and October 2024. It highlights key trends in the volume and types of complaints, with a special grouping: any complaint types that appear between one and six times are consolidated into an "OTHER" category, offering a clearer view of the more common complaint types.')
+    .style("font-size","1.5em")
+    .style("padding-left","460px")
+    .style("padding-right","525px")
+
+
 
 const svg = 
     main
@@ -84,42 +110,57 @@ const svg =
     .attr("width", width)
     .attr("height", height)
     .attr("viewBox",`0 0 ${width} ${height}`)
-    .style("background-color", "white")
+    .style("background-color", "black")
     .style("max-width", "100%")
     .style("height", "auto");
 
+//legend
+const legendHeight = 200, legendWidth = 200;
+const legendDiv = 
+legendContainer.append('svg')
+    .attr('class', 'legend')
+    .attr("width", legendWidth)
+    .attr("height", legendHeight)
+    .attr("viewBox",`${legendWidth  - 20 } 0 ${legendWidth} ${legendHeight}`)
+    .style("background-color", "black")
+    .style("max-width", "100%")
+    .style("height", "auto")
+    
+    
+    ;
+      
 //set up x and y axis 
 const xScale = d3
   .scaleBand()
   .domain( complaintCat )
   .range( [ margin.left, width - margin.right ] )
-  .padding( 0.1 )
+  .padding( 0.05 )
   .round(true);
 
 const yScale = d3
   .scaleLinear()
-  .domain( [max, 0 ]) 
-  .range( [margin.top, height - margin.bottom] )
+  .domain( [ max, 0 ]) 
+  .range( [ margin.top, height - margin.bottom ] )
   .nice();
 
-//creates groups for each component
-const gridLines = svg
-  .append('g')
-  .attr('data-component','grid-lines');
-
-const axes = svg
-  .append('g')
-  .attr('data-component', 'axes');
-
-const bars = svg
-  .append('g')
-  .attr('data-component', 'bars');
+const legendScale = d3
+  .scaleBand()
+  .domain(complaintCat)
+  .range([0, legendWidth])
+  .padding(0.2)
+  .round(true)
 
 const bardata = Array.from(complaintType.entries()).sort((a, b) =>  b[1] -  a[1]);
 console.log('this is bardata',bardata )
 xScale.domain(bardata.map(d => d[0]));
 
+const gridLines = svg.append('g').attr('data-component', 'grid-lines')
+const axes = svg.append('g').attr('data-component','axes')
+const bars =  svg.append('g').attr('data-component','bars')
+const legend = legendDiv.append('g').attr('data-component','legend')
+
 bars
+  .append('g')
   .selectAll('rect')
   .data(bardata)
   .join('rect')
@@ -127,13 +168,63 @@ bars
   .attr('y', (d) => yScale(d[1]))
   .attr('width', xScale.bandwidth())
   .attr('height', (d) => height - margin.bottom - yScale(d[1]))
-  .attr('fill', (d) => color(d[0]));
+  .attr('fill', (d) => color(d[0]))
+  .attr('rx',3);
+
+const hideDefLines = (g) => {
+  return g.select("path.domain").style('opacity',0)
+}
+
+const styleAxes = (g) => {
+  return (
+    g.selectAll('text')
+    .attr('class', 'axesStyle')
+    .attr('font-family','monospace')
+  )
+}  
+
+gridLines
+  .append('g')
+  .attr('transform', `translate(${width - margin.left + 13.5} 0 )`)
+  .call( d3.axisLeft(yScale)
+          .tickSize(width - (margin.left + margin.right))
+          .tickFormat("")
+        )
+  .call(hideDefLines)
+  .attr('opacity',0.1)
+  
+axes
+  .append('g')
+  .attr('transform', `translate(0 ${height - margin.bottom})`)
+  .call(d3.axisBottom(xScale))
+  .call(hideDefLines)
+  .call(styleAxes);
 
 axes
-  .append("g")
-  .attr("transform", `translate(0 ${height - margin.bottom + 5})`)
-  .call(d3.axisBottom(xScale));
+  .append('g')
+  .attr('transform', `translate(${margin.left} 0)`)
+  .call(d3.axisLeft(yScale))
+  .call(hideDefLines)
+  .call(styleAxes);
 
-axes 
-  .append("g")
-  .call(d3.axisLeft(yScale).tickSize(0))
+legend
+  .append('g')
+  .selectAll('rect')
+  .data(bardata)
+  .join('rect')
+  .attr('x', `${legendWidth  - 20 }`)
+  .attr('y',(d) => legendScale(d[0]))
+  .attr('width',"20px")
+  .attr('height','20px')
+  .attr('fill', (d) => color(d[0]))
+
+legend
+  .append('g')
+  .attr('transform', `translate(${legendWidth} 0)`)
+  .call(d3.axisRight(legendScale))
+  .call(hideDefLines)
+  .call(styleAxes);
+
+
+  //https://d3-graph-gallery.com/graph/custom_legend.html
+  
