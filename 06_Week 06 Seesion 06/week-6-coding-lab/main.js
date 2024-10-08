@@ -49,7 +49,7 @@ console.log(" –> Complaint Type Count ", complaintType)
 //Added OTHER Group, in which all complaints are calculated that has from one till six complaints
 let otherCount = 0; 
 complaintType.forEach( ( value, key ) => {
-  if ( value >= 1 && value <= 6){
+  if ( value >= 1 && value <= 11){
     otherCount += value
     complaintType.delete(key)
   }
