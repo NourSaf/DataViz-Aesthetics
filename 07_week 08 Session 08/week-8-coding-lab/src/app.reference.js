@@ -6,19 +6,25 @@ import { partsOfSpeech } from "./partsOfSpeech.js";
 
 const sentiment = new Sentiment();
 
-console.log({ RiTa });
+console.log("this is rita",{ RiTa });
+console.log("this is rita");
 
 const fetchData = async () => {
   const text = await d3.text("/text/Frankenstein.txt");
 
   const tokens = RiTa.tokenize(text);
+  console.log('Those are the tokens',tokens)
 
   return d3.rollup(
     tokens,
     (v, ...args) => {
       const word = v[0];
+      console.log('This is Word',word)
       const score = sentiment.analyze(v.join(" ")).score;
+      console.log('This is score',score)
       const posType = RiTa.pos(word, { simple: false })[0];
+      console.log('This is PosType',posType)
+      console.log('this is parts of speech',partsOfSpeech[posType])
 
       return {
         occurrences: v.length,
@@ -33,6 +39,7 @@ const fetchData = async () => {
 };
 
 const data = await fetchData();
+console.log("this is data",data)
 
 const topNegativeWords = Array.from(data)
   .filter(([key, value]) => {
@@ -41,6 +48,7 @@ const topNegativeWords = Array.from(data)
   .sort((a, b) => {
     return b[1].occurrences - a[1].occurrences;
   });
+  console.log("this is topNegativeWords",topNegativeWords)
 
 const app = d3.select("#app");
 
