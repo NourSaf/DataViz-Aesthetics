@@ -50,12 +50,9 @@ const fetchData = async () => {
 const app = d3.select('#app');
 
 const createDropdown = () => {
-  const dropdownContainer = app.append("div")
-    .attr("id", "dropdown-container")
+  const dropdown = app.append("select")
+    .attr("id", "text-dropdown")
     .style("margin", "20px");
-
-  const dropdown = dropdownContainer.append("select")
-    .attr("id", "text-dropdown");
 
   dropdown.selectAll("option")
     .data(files)
@@ -71,7 +68,6 @@ const createDropdown = () => {
     processData(data);
   });
 };
-
 
 const processData = (data) => {
   const positiveWords = [];
@@ -150,11 +146,6 @@ const processData = (data) => {
 };
 
 createDropdown();
-app.append("div")
-  .attr("id", "text-content")
-  .style("white-space", "pre-wrap")
-  .style("height", "500px")
-  .style("overflow-y", "scroll");
 
 const data = await fetchData();
 const fetchAndDisplayText = async (selectedFile) => {
@@ -166,119 +157,3 @@ app.append("div").attr("id", "text-content").style("white-space", "pre-wrap");
 
 processData(data);
 
-const displayCommonWords = async () => {
-  const allTexts = await Promise.all(files.map(file => d3.text(file)));
-  const allTokens = allTexts.flatMap(text => ri.tokenize(text.toLowerCase()));
-
-  // List of common stop words to remove
-  const stopWords = new Set(["on", "of", "the", "and", "a", "to", "in", "is", "it", "that", "with", "as", "for", "was", "were", "by", "at", "an", "be", "this", "which", "or", "from", "but", "not", "are", "have", "has", "had", "they", "their", "its", "if", "will", "would", "can", "could", "should", "shall", "may", "might", "must", "do", "does", "did", "done", "been", "being", "we", "you", "he", "she", "him", "her", "them", "us", "our", "your", "his", "hers", "theirs", "i", "me", "my", "mine", "yours", "ours", "themselves", "yourself", "ourselves", "yourselves", "himself", "herself", "itself", "who", "whom", "whose", "which", "that", "these", "those", "there", "here", "when", "where", "why", "how", "what", "all", "any", "some", "no", "yes", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]);
-
-  const filteredTokens = allTokens.filter(token => !stopWords.has(token));
-  const tokenCounts = d3.rollup(filteredTokens, v => v.length, d => d);
-
-  const sortedTokens = Array.from(tokenCounts.entries()).sort((a, b) => b[1] - a[1]);
-
-  const commonWordsContainer = app.append("div")
-    .attr("id", "common-words")
-    .style("position", "fixed")
-    .style("right", "0")
-    .style("top", "0")
-    .style("width", "300px")
-    .style("height", "100%")
-    .style("overflow-y", "auto")
-    .style("background-color", "#f9f9f9")
-    .style("padding", "20px")
-    .style("box-shadow", "-2px 0 5px rgba(0,0,0,0.1)");
-
-  commonWordsContainer.append("h3").text("Common Words");
-
-  const list = commonWordsContainer.append("ul");
-
-  // Display most repeated positive and negative words
-  const positiveWords = [];
-  const negativeWords = [];
-
-  filteredTokens.forEach(token => {
-    const score = sentiment.analyze(token).score;
-    if (score > 0) {
-      positiveWords.push(token);
-    } else if (score < 0) {
-      negativeWords.push(token);
-    }
-  });
-
-  const positiveCounts = d3.rollup(positiveWords, v => v.length, d => d);
-  const negativeCounts = d3.rollup(negativeWords, v => v.length, d => d);
-
-  const sortedPositive = Array.from(positiveCounts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
-  const sortedNegative = Array.from(negativeCounts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
-
-  const positiveContainer = commonWordsContainer.append("div").attr("id", "positive-words");
-  positiveContainer.append("h3").text("Top 10 Positive Words");
-
-  const positiveList = positiveContainer.append("ul");
-  sortedPositive.forEach(([word, count]) => {
-    positiveList.append("li").text(`${word}: ${count}`);
-  });
-
-  const negativeContainer = commonWordsContainer.append("div").attr("id", "negative-words");
-  negativeContainer.append("h3").text("Top 10 Negative Words");
-
-  const negativeList = negativeContainer.append("ul");
-  sortedNegative.forEach(([word, count]) => {
-    negativeList.append("li").text(`${word}: ${count}`);
-  });
-
-  // Create heat maps for top 10 words
-  const createHeatMap = (container, data, title) => {
-    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-    const width = 300 - margin.left - margin.right;
-    const height = 200 - margin.top - margin.bottom;
-
-    const svg = container.append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
-
-    const x = d3.scaleBand()
-      .range([0, width])
-      .domain(data.map(d => d[0]))
-      .padding(0.05);
-
-    const y = d3.scaleBand()
-      .range([height, 0])
-      .domain([title])
-      .padding(0.05);
-
-    const color = d3.scaleSequential()
-      .interpolator(d3.interpolateBlues)
-      .domain([0, d3.max(data, d => d[1])]);
-
-    svg.selectAll()
-      .data(data, d => d[0])
-      .enter()
-      .append("rect")
-      .attr("x", d => x(d[0]))
-      .attr("y", d => y(title))
-      .attr("width", x.bandwidth())
-      .attr("height", y.bandwidth())
-      .style("fill", d => color(d[1]));
-
-    svg.append("g")
-      .style("font-size", 12)
-      .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(x).tickSize(0))
-      .select(".domain").remove();
-
-    svg.append("g")
-      .style("font-size", 12)
-      .call(d3.axisLeft(y).tickSize(0))
-      .select(".domain").remove();
-  };
-
-  createHeatMap(positiveContainer, sortedPositive, "Positive Words");
-  createHeatMap(negativeContainer, sortedNegative, "Negative Words");
-};
-
-displayCommonWords();
