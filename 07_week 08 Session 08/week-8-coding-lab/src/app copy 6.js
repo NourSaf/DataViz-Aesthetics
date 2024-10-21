@@ -12,7 +12,7 @@ names.sort((a, b) => {
 });
 
 const files = names.map(name => `sotu/${name}`);
-// console.log("this is my file",files)
+console.log("this is my file",files)
 
 const sentiment = new Sentiment();
 
@@ -26,12 +26,14 @@ const fetchData = async () => {
 
   const text = await d3.text(selectedFile);
   const tokens = ri.tokenize(text);
+  
   const analysedText = d3.rollup(tokens,
     (v) => {
       const word = v[0];
       const score = sentiment.analyze(v.join(" ")).score;
       const posType = ri.pos(word, { simple: false })[0];
       const posdetails = partsOfSpeech[posType];
+      
       return {
         occurrences: v.length,
         sentiment: score,
@@ -43,6 +45,30 @@ const fetchData = async () => {
   return analysedText;
 };
 
+const app = d3.select('#app');
+
+const createDropdown = () => {
+  const dropdownContainer = app.append("div")
+    .attr("id", "dropdown-container")
+    .style("margin", "20px");
+
+  const dropdown = dropdownContainer.append("select")
+    .attr("id", "text-dropdown");
+
+  dropdown.selectAll("option")
+    .data(files)
+    .enter()
+    .append("option")
+    .attr("value", d => d)
+    .text(d => d.split('/').pop().replace('.txt', ''));
+
+  dropdown.on("change", async function() {
+    const selectedFile = d3.select(this).property("value");
+    await fetchAndDisplayText(selectedFile);
+    const data = await fetchData();
+    processData(data);
+  });
+};
 
 const processData = (data) => {
   const positiveWords = [];
@@ -53,7 +79,7 @@ const processData = (data) => {
   const countriesWords = [];
   const socialSecurityWords = [];
 
-  const politicsKeywords = ["government", "election", "policy", "president", "congress", "senate", "democracy", "republic", "campaign", "vote", "legislation", "law", "minister", "parliament", "diplomacy", "governance", "politician", "bureaucracy", "regulation", "administration", "cabinet", "judiciary", "constitution", "referendum", "lobbying", "political party", "state", "federal", "municipal", "executive", "judicial", "legislative"];
+  const politicsKeywords = ["government", "election", "policy", "president", "congress"];
   const economyKeywords = ["economy", "market", "trade", "finance", "budget", "investment", "inflation", "recession", "growth", "debt", "tax", "revenue", "expenditure", "subsidy", "tariff", "import", "export", "bank", "currency", "stock", "bond", "interest", "loan", "credit", "capital"];
   const countriesKeywords = [
     "afghanistan", "albania", "algeria", "andorra", "angola", "antigua and barbuda", "argentina", "armenia", "australia", "austria",
@@ -74,7 +100,7 @@ const processData = (data) => {
     "syria", "taiwan", "tajikistan", "tanzania", "thailand", "timor-leste", "togo", "tonga", "trinidad and tobago", "tunisia", "turkey",
     "turkmenistan", "tuvalu", "uganda", "ukraine", "united arab emirates", "united kingdom", "united states", "uruguay", "uzbekistan", "vanuatu",
     "vatican city", "venezuela", "vietnam", "yemen", "zambia", "zimbabwe"
-];
+  ];
   const socialSecurityKeywords = ["social security", "welfare", "pension", "retirement", "disability", "medicare", "medicaid", "unemployment", "benefits", "assistance", "aid", "support", "insurance", "coverage", "entitlement", "allowance", "grant", "subsidy", "compensation", "relief"];
 
   data.forEach((value, key) => {
@@ -83,6 +109,7 @@ const processData = (data) => {
     } else if (value.sentiment < 0) {
       negativeWords.push(key);
     }
+
     if (politicsKeywords.includes(key)) {
       politicsWords.push(key);
     }
@@ -119,30 +146,6 @@ const processData = (data) => {
   ];
 };
 
-
-const app = d3.select('#app');
-const createDropdown = () => {
-  const dropdownContainer = app.append("div")
-    .attr("id", "dropdown-container")
-    .style("margin", "20px");
-
-  const dropdown = dropdownContainer.append("select")
-    .attr("id", "text-dropdown");
-
-  dropdown.selectAll("option")
-    .data(files)
-    .enter()
-    .append("option")
-    .attr("value", d => d)
-    .text(d => d.split('/').pop().replace('.txt', ''));
-
-  dropdown.on("change", async function() {
-    const selectedFile = d3.select(this).property("value");
-    await fetchAndDisplayText(selectedFile);
-    const data = await fetchData();
-    processData(data);
-  });
-};
 createDropdown();
 
 app.append("div")
@@ -157,4 +160,134 @@ const fetchAndDisplayText = async (selectedFile) => {
   d3.select("#text-content").text(text);
 };
 
+app.append("div").attr("id", "text-content").style("white-space", "pre-wrap");
+
 processData(data);
+
+const displayCommonWords = async () => {
+  const allTexts = await Promise.all(files.map(file => d3.text(file)));
+  const allTokens = allTexts.flatMap(text => ri.tokenize(text.toLowerCase()));
+
+  // List of common stop words to remove
+  const stopWords = new Set(["on", "of", "the", "and", "a", "to", "in", "is", "it", "that", "with", "as", "for", "was", "were", "by", "at", "an", "be", "this", "which", "or", "from", "but", "not", "are", "have", "has", "had", "they", "their", "its", "if", "will", "would", "can", "could", "should", "shall", "may", "might", "must", "do", "does", "did", "done", "been", "being", "we", "you", "he", "she", "him", "her", "them", "us", "our", "your", "his", "hers", "theirs", "i", "me", "my", "mine", "yours", "ours", "themselves", "yourself", "ourselves", "yourselves", "himself", "herself", "itself", "who", "whom", "whose", "which", "that", "these", "those", "there", "here", "when", "where", "why", "how", "what", "all", "any", "some", "no", "yes", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]);
+  const filteredTokens = allTokens.filter(token => !stopWords.has(token));
+  const tokenCounts = d3.rollup(filteredTokens, v => v.length, d => d);
+
+  const sortedTokens = Array.from(tokenCounts.entries()).sort((a, b) => b[1] - a[1]);
+
+  const commonWordsContainer = app.append("div")
+    .attr("id", "common-words")
+    .style("position", "fixed")
+    .style("right", "0")
+    .style("top", "0")
+    .style("width", "500px")
+    .style("height", "100%")
+    .style("overflow-y", "auto")
+    .style("background-color", "#f9f9f9")
+    .style("padding", "20px");
+
+  commonWordsContainer.append("h3").text("List of Words over all the texts");
+
+  const list = commonWordsContainer.append("ul");
+
+  // Display most repeated positive and negative words
+  const positiveWords = [];
+  const negativeWords = [];
+
+  filteredTokens.forEach(token => {
+    const score = sentiment.analyze(token).score;
+    if (score > 0) {
+      positiveWords.push(token);
+    } else if (score < 0) {
+      negativeWords.push(token);
+    }
+  });
+
+  const positiveCounts = d3.rollup(positiveWords, v => v.length, d => d);
+  const negativeCounts = d3.rollup(negativeWords, v => v.length, d => d);
+
+  const sortedPositive = Array.from(positiveCounts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const sortedNegative = Array.from(negativeCounts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+  const positiveContainer = commonWordsContainer.append("div").attr("id", "positive-words");
+  positiveContainer.append("h3").text("Top 10 Positive Words");
+
+  const positiveList = positiveContainer.append("ul");
+  sortedPositive.forEach(([word, count]) => {
+    positiveList.append("li").text(`${word}: ${count}`);
+  });
+
+  const negativeContainer = commonWordsContainer.append("div").attr("id", "negative-words");
+  negativeContainer.append("h3").text("Top 10 Negative Words");
+
+  const negativeList = negativeContainer.append("ul");
+  sortedNegative.forEach(([word, count]) => {
+    negativeList.append("li").text(`${word}: ${count}`);
+  });
+
+  // Create heat maps for top 10 words
+  const createHeatMap = (container, data, title) => {
+    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const width = 500 - margin.left - margin.right;
+    const height = 200 - margin.top - margin.bottom;
+
+    const svg = container.append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleBand()
+      .range([0, width])
+      .domain(data.map(d => d[0]))
+      .padding(0.02);
+
+    const y = d3.scaleBand()
+      .range([height, 0])
+      .domain([title])
+      .padding(0.1);
+
+    const color = d3.scaleSequential()
+      .interpolator(d3.interpolateBlues)
+      .domain([0, d3.max(data, d => d[1])]);
+
+    svg.selectAll()
+      .data(data, d => d[0])
+      .enter()
+      .append("rect")
+      .attr("x", d => x(d[0]))
+      .attr("y", d => y(title))
+      .attr("width", x.bandwidth())
+      .attr("height", y.bandwidth())
+      .style("fill", d => color(d[1]))
+      .select(".domain").remove();
+
+    svg.selectAll("rect")
+      .on("mouseover", function(event, d) {
+      d3.select(this)
+        .style("stroke", "black")
+        .style("stroke-width", 2);
+
+      const [word, count] = d;
+      const tooltip = svg.append("text")
+        .attr("x", x(word) + x.bandwidth() / 2)
+        .attr("y", y(title) - 10)
+        .attr("text-anchor", "middle")
+        .attr("class", "tooltip")
+        .text(`${word}: ${count}`);
+      })
+      .on("mouseout", function() {
+      d3.select(this)
+        .style("stroke", "none");
+
+      svg.selectAll(".tooltip").remove();
+
+      });
+    
+  };
+
+  createHeatMap(positiveContainer, sortedPositive, "Positive Words");
+  createHeatMap(negativeContainer, sortedNegative, "Negative Words");
+};
+
+displayCommonWords();
