@@ -186,9 +186,9 @@ const createDropdown = async () => {
       if (data.has(lowerToken)) {
       const sentimentScore = data.get(lowerToken).sentiment;
       if (sentimentScore > 0) {
-        return `<span style="background: green;">${token}</span>`;
+        return `<span style="background: rgb(125,211,228);">${token}</span>`;
       } else if (sentimentScore < 0) {
-        return `<span style="background: red;">${token}</span>`;
+        return `<span style="background: rgb(226,135,67);">${token}</span>`;
       }
       }
       return token;
@@ -207,14 +207,14 @@ const createDropdown = async () => {
 
     countContainer.append('div')
       .attr('class', 'positive-count')
-      .style('background', 'green')
+      .style('background', 'rgb(125,211,228)')
       .style('padding', '0.2em')
       .style('width', `${(positiveWords.length / maxWords) * 100}%`)
       .text(`Positive words: ${positiveWords.length}`);
 
     countContainer.append('div')
       .attr('class', 'negative-count')
-      .style('background', 'red')
+      .style('background', 'rgb(226,135,67)')
       .style('padding', '0.2em')
       .style('width', `${(negativeWords.length / maxWords) * 100}%`)
       .text(`Negative words: ${negativeWords.length}`);
@@ -245,7 +245,7 @@ const createDropdown = async () => {
 
     const bubbleColor = d3.scaleOrdinal()
       .domain(['positive', 'negative'])
-      .range(['green', 'red']);
+      .range(['rgb(125,211,228)', 'rgb(226,135,67)']);
 
     const bubbleSimulation = d3.forceSimulation(bubbleData)
       .force('charge', d3.forceManyBody().strength(10))
@@ -302,9 +302,9 @@ const createDropdown = async () => {
       if (initialData.has(lowerToken)) {
       const sentimentScore = initialData.get(lowerToken).sentiment;
       if (sentimentScore > 0) {
-        return `<span style="background: green;">${token}</span>`;
+        return `<span style="background: rgb(125,211,228);">${token}</span>`;
       } else if (sentimentScore < 0) {
-        return `<span style="background: red;">${token}</span>`;
+        return `<span style="background: rgb(226,135,67);">${token}</span>`;
       }
       }
       return token;
@@ -323,14 +323,14 @@ const createDropdown = async () => {
 
     countContainer.append('div')
       .attr('class', 'positive-count')
-      .style('background', 'green')
+      .style('background', 'rgb(125,211,228)')
       .style('padding', '0.2em')
       .style('width', `${(positiveWords.length / maxWords) * 100}%`)
       .text(`Positive words: ${positiveWords.length}`);
 
     countContainer.append('div')
       .attr('class', 'negative-count')
-      .style('background', 'red')
+      .style('background', 'rgb(226,135,67)')
       .style('padding', '0.2em')
       .style('width', `${(negativeWords.length / maxWords) * 100}%`)
       .text(`Negative words: ${negativeWords.length}`);

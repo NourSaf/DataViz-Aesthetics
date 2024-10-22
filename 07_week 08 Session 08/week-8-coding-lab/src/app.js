@@ -56,7 +56,7 @@ const processData = (data) => {
   const socialSecurityWords = [];
 
   const politicsKeywords = ["government", "election", "policy", "president", "congress", "senate", "democracy", "republic", "campaign", "vote", "legislation", "law", "minister", "parliament", "diplomacy", "governance", "politician", "bureaucracy", "regulation", "administration", "cabinet", "judiciary", "constitution", "referendum", "lobbying", "political party", "state", "federal", "municipal", "executive", "judicial", "legislative"];
-  const economyKeywords = ["economy", "market", "trade", "finance", "budget", "investment", "inflation", "recession", "growth", "debt", "tax", "revenue", "expenditure", "subsidy", "tariff", "import", "export", "bank", "currency", "stock", "bond", "interest", "loan", "credit", "capital"];
+  const economyKeywords = ["economy", "market", "trade", "finance", "budget", "investment", "inflation", "recession", "growth", "debt", "tax", "revenue", "expenditure", "subsidy", "tariff", "import", "export", "bank", "currency", "stock", "bond", "interest", "loan", "crgba(206,96,47,255)it", "capital"];
   const countriesKeywords = [
     "afghanistan", "albania", "algeria", "andorra", "angola", "antigua and barbuda", "argentina", "armenia", "australia", "austria",
     "azerbaijan", "bahamas", "bahrain", "bangladesh", "barbados", "belarus", "belgium", "belize", "benin", "bhutan", "bolivia",
@@ -151,7 +151,8 @@ const createDropdown = async () => {
     .style("padding", "1em")
     .style("background", "black")
     .style("color","white")
-    .style("border", "0.1em solid white")
+    .style("border", "0.01em solid white")
+    .style("border-radius","2em")
     .style("appearance", "none")
     .style("-webkit-appearance", "none")
     .style("-moz-appearance", "none");
@@ -186,9 +187,9 @@ const createDropdown = async () => {
       if (data.has(lowerToken)) {
       const sentimentScore = data.get(lowerToken).sentiment;
       if (sentimentScore > 0) {
-        return `<span style="background: green;">${token}</span>`;
+        return `<span style="background: rgba(44,160,197,255);">${token}</span>`;
       } else if (sentimentScore < 0) {
-        return `<span style="background: red;">${token}</span>`;
+        return `<span style="background: rgba(206,96,47,255);">${token}</span>`;
       }
       }
       return token;
@@ -207,14 +208,14 @@ const createDropdown = async () => {
 
     countContainer.append('div')
       .attr('class', 'positive-count')
-      .style('background', 'green')
+      .style('background', 'rgba(44,160,197,255)')
       .style('padding', '0.2em')
       .style('width', `${(positiveWords.length / maxWords) * 100}%`)
       .text(`Positive words: ${positiveWords.length}`);
 
     countContainer.append('div')
       .attr('class', 'negative-count')
-      .style('background', 'red')
+      .style('background', 'rgba(206,96,47,255)')
       .style('padding', '0.2em')
       .style('width', `${(negativeWords.length / maxWords) * 100}%`)
       .text(`Negative words: ${negativeWords.length}`);
@@ -241,14 +242,14 @@ const createDropdown = async () => {
 
     const bubbleScale = d3.scaleSqrt()
       .domain([1, d3.max(bubbleData, d => d.word.length)])
-      .range([5, 40]);
+      .range([5, 80]);
 
     const bubbleColor = d3.scaleOrdinal()
       .domain(['positive', 'negative'])
-      .range(['green', 'red']);
+      .range(['rgba(44,160,197,255)', 'rgba(206,96,47,255)']);
 
     const bubbleSimulation = d3.forceSimulation(bubbleData)
-      .force('charge', d3.forceManyBody().strength(10))
+      .force('charge', d3.forceManyBody().strength(12))
       .force('center', d3.forceCenter(bubbleChartSvg.attr('width') / 2, bubbleChartSvg.attr('height') / 2))
       .force('collision', d3.forceCollide().radius(d => bubbleScale(d.word.length) + 2))
       .on('tick', () => {
@@ -302,9 +303,9 @@ const createDropdown = async () => {
       if (initialData.has(lowerToken)) {
       const sentimentScore = initialData.get(lowerToken).sentiment;
       if (sentimentScore > 0) {
-        return `<span style="background: green;">${token}</span>`;
+        return `<span style="background: rgba(44,160,197,255);">${token}</span>`;
       } else if (sentimentScore < 0) {
-        return `<span style="background: red;">${token}</span>`;
+        return `<span style="background: rgba(206,96,47,255);">${token}</span>`;
       }
       }
       return token;
@@ -323,14 +324,14 @@ const createDropdown = async () => {
 
     countContainer.append('div')
       .attr('class', 'positive-count')
-      .style('background', 'green')
+      .style('background', 'rgba(44,160,197,255)')
       .style('padding', '0.2em')
       .style('width', `${(positiveWords.length / maxWords) * 100}%`)
       .text(`Positive words: ${positiveWords.length}`);
 
     countContainer.append('div')
       .attr('class', 'negative-count')
-      .style('background', 'red')
+      .style('background', 'rgba(206,96,47,255)')
       .style('padding', '0.2em')
       .style('width', `${(negativeWords.length / maxWords) * 100}%`)
       .text(`Negative words: ${negativeWords.length}`);
@@ -361,7 +362,7 @@ const createDropdown = async () => {
 
     const bubbleColor = d3.scaleOrdinal()
       .domain(['positive', 'negative'])
-      .range(['green', 'red']);
+      .range(['rgba(44,160,197,255)', 'rgba(206,96,47,255)']);
 
     const bubbleSimulation = d3.forceSimulation(bubbleData)
       .force('charge', d3.forceManyBody().strength(10))
@@ -429,7 +430,17 @@ const savedCountsDiv = d3.select("body").append("div")
   .style("border", "1px solid black")
   .style("max-height", "90vh")
   .style("overflow-y", "auto")
-  .style("display", "none"); // Initially hidden
+  .style("color", "black")
+  .style("display", "none")
+  .style('border-radius','1em')
+
+const savedTitle = savedCountsDiv.append('div')
+  .attr('class', 'saved-title')
+  .style('color','Gray')
+  .style('padding-bottom','1em')
+  .style('font-size','0.7em')
+  .text('Saved')
+  
 
 // Function to toggle the visibility of the saved counts div
 const toggleSavedCountsVisibility = () => {
