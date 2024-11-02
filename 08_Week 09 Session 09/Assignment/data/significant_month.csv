@@ -1,0 +1,12 @@
+time,latitude,longitude,depth,mag,magType,nst,gap,dmin,rms,net,id,updated,place,type,horizontalError,depthError,magError,magNst,status,locationSource,magSource
+2024-10-31T04:35:09.862Z,28.9395,34.2265,10,4.3,mb,22,251,2.626,1.16,us,us7000np55,2024-11-02T14:24:56.824Z,"44 km WSW of Nuwaybi‘a, Egypt",earthquake,13.27,2.018,0.137,15,reviewed,us,us
+2024-10-30T20:15:19.955Z,43.544,-127.7993,10,6,mww,95,97,2.73,1.06,us,us7000np33,2024-11-02T18:18:37.204Z,"279 km W of Bandon, Oregon",earthquake,10.58,1.877,0.036,73,reviewed,us,us
+2024-10-28T07:49:24.330Z,34.5815,-120.519,-0.08,3.64,ml,32,182,0.1241,0.26,ci,ci40966024,2024-10-30T13:34:20.677Z,"8 km SW of Lompoc, CA",earthquake,0.44,0.6,0.141,86,reviewed,ci,ci
+2024-10-28T03:55:49.610Z,34.5735,-120.534,-0.09,3.19,ml,29,188,0.1372,0.29,ci,ci40965984,2024-10-30T13:32:49.321Z,"10 km SW of Lompoc, CA",earthquake,0.53,0.76,0.138,73,reviewed,ci,ci
+2024-10-27T06:56:54.934Z,23.4181,120.447,10,4.2,mwr,31,97,0.205,1.29,us,us7000nnfr,2024-10-30T13:41:07.246Z,"7 km S of Pizitou, Taiwan",earthquake,4.24,1.881,0.073,18,reviewed,us,us
+2024-10-27T06:19:12.768Z,23.4128,120.4172,10,4.3,mwr,37,99,0.225,1.14,us,us7000nnfp,2024-10-30T14:38:35.471Z,"8 km SSW of Pizitou, Taiwan",earthquake,3.74,1.873,0.068,21,reviewed,us,us
+2024-10-25T14:46:22.315Z,13.9643,-92.7139,10,5.8,mww,93,137,1.615,1.84,us,us7000nn6t,2024-10-30T15:59:04.280Z,"82 km SW of Brisas Barra de Suchiate, Mexico",earthquake,7.09,1.888,0.052,35,reviewed,us,us
+2024-10-16T07:46:32.889Z,38.3086,38.8261,10,6,mww,118,43,0.383,1.02,us,us6000nyzk,2024-10-30T02:58:09.555Z,"18 km W of Doğanyol, Turkey",earthquake,3.78,1.815,0.042,55,reviewed,us,us
+2024-10-12T17:43:44.471Z,10.487,-86.1712,16,6.2,mww,225,32,0.912,0.91,us,us6000nyau,2024-10-15T09:35:15.520Z,"41 km WNW of Tamarindo, Costa Rica",earthquake,5.46,1.708,0.03,110,reviewed,us,us
+2024-10-06T10:51:08.410Z,34.0236667,-117.5923333,5.17,3.99,mw,183,12,0.01565,0.25,ci,ci40752807,2024-10-27T05:22:26.156Z,"5 km SE of Ontario, CA",earthquake,0.12,0.3,,6,reviewed,ci,ci
+2024-10-04T09:08:58.475Z,49.0484,-123.4017,61.424,3.6,mwr,199,42,0.122,0.41,us,us6000nwgu,2024-10-31T11:29:54.590Z,"22 km NNE of Ganges, Canada",earthquake,2.43,1.487,,,reviewed,us,pgc
