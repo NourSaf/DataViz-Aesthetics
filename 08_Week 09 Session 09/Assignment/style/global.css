@@ -1,0 +1,15 @@
+body{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+};
+
+#main-container{
+    inset: 0;
+    padding: 10px;
+    overflow: auto;
+};
+
+.header-dev{
+    height: 60px;
+}
