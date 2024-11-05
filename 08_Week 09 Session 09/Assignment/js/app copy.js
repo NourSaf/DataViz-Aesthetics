@@ -60,37 +60,85 @@ map.addLayer(Stadia_AlidadeSmoothDark)
 const data = await d3.csv('data/significant_month.csv')
 console.log(data)
 
+const latitudes = d3.rollup(data, 
+    (v) => v,
+    (d) => d.latitude,
+)
 
-for (let i = 0; i < data.length; i++) {
-    const latitude = +data[i].latitude;
-    const longitude = +data[i].longitude;
-    const magnitude = +data[i].mag;
-    const place = data[i].place;
+const longitudes = d3.rollup(data, 
+    (v) => v,
+    (d) => d.longitude,
+)
 
-    const leafletCoords = L.latLng(latitude, longitude);
+const places = d3.rollup(data, 
+    (v) => v, 
+    (d) => d.place,
+)
 
-    let color;
-    if (magnitude >= 5) {
-        color = 'red';
-    } else if (magnitude > 2) {
-        color = 'blue';
-    } else {
-        color = 'green';
-    }
+const mags = d3.rollup(data, 
+    (v) => v, 
+    (d) => d.mag,
+)
+console.log("those are mafs",mags)
 
-    L.circle(leafletCoords, {
-        color: color,
-        weight: 0.5,
-        fillColor: color,
-        fillOpacity: 0.5,
-        radius: 90000
-    })
-        .bindPopup(`City Name: ${place} | Magnitude: ${magnitude}`)
-        .addTo(map)
-        .on('click', function() {
-            map.setView(leafletCoords, 6);
+const longitudeArray = Array.from(longitudes.keys());
+console.log('this is Longitude Array',longitudeArray);
+const latitudeArray = Array.from(latitudes.keys());
+console.log('this is Latitude Array',latitudeArray);
+const placesArray = Array.from(places.keys());
+console.log(placesArray)
+const cityName = placesArray.map(place => place.split(' of ')[1]);
+console.log(cityName)
+
+const magArray = Array.from(mags.keys()).sort()
+console.log("this is Mag array",magArray)
+
+for ( let i = 0;  i < latitudeArray.length; i++){
+    console.log(latitudeArray[i],longitudeArray[i])
+    const leafletCoords = L.latLng(latitudeArray[i], longitudeArray[i]); 
+    if (magArray[i] >= 6){
+        L.circle(leafletCoords, {
+            color: 'red',
+            weight: 0.5,
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 120000
+        })
+            .bindPopup(`City Name: ${cityName[i]} | Magnitude: ${magArray[i]}`)
+            .addTo(map)
+            .on('click', function(){
+                map.setView(leafletCoords, 6);
+            });
+    } if (magArray[i] > 4 && magArray[i] < 6 ){
+        L.circle(leafletCoords, {
+            color: 'blue',
+            weight: 0.5,
+            fillColor: 'blue',
+            fillOpacity: 0.5,
+            radius: 120000
+        })
+            .bindPopup(`City Name: ${cityName[i]} | Magnitude: ${magArray[i]}`)
+            .addTo(map)
+            .on('click', function(){
+                map.setView(leafletCoords, 6);
+            });
+    } if (magArray[i] < 4 ){
+        L.circle(leafletCoords, {
+            color: 'green',
+            weight: 0.5,
+            fillColor: 'green',
+            fillOpacity: 0.5,
+            radius: 120000
+        })
+            .bindPopup(`City Name: ${cityName[i]} | Magnitude: ${magArray[i]}`)
+           
+            .addTo(map)
+            .on('click', function(){
+                map.setView(leafletCoords, 6);
         });
+    } 
 }
+
 
 L.Control.ResetButton = L.Control.extend({
     options: {
@@ -125,8 +173,8 @@ resetView.addTo(map)
 
 
 function getColor(d) {
-    return d > 5          ? 'red'  :
-           d > 2 && d < 5 ? 'blue' :
+    return d > 6          ? 'red'  :
+           d > 4 && d < 6 ? 'blue' :
                             'green';
 }
 
@@ -134,7 +182,7 @@ const legend = L.control({position:'bottomleft'});
 legend.onAdd = function () {
     
     let div = L.DomUtil.create('div', 'legend');
-    let classes = [-3, 2, 5];
+    let classes = [1, 4, 6];
     // let labels = [];
 
     div.innerHTML += '<p class="legend-title">Earthquake Magnitude</p>';
