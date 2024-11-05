@@ -10,16 +10,25 @@ body {
     inset: 0;
     overflow: auto;
     width: 100vw;
+    height: 100vh;
 }
 
 .leaflet-container {
     width: 100vw !important;
-    height: 700px !important;
+    height: 100% !important;
 }
 
 .header-dev{
-    height: 60px;
-    font-size: var(--font-size);
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    padding: 20px 70px 20px 70px;
+    background-color: rgb(19,19,26);
+    z-index: 1000;
+    top: 1%;
+    left: 1%;
+    border-radius: 10px;
+
 }
 
 .legend {
@@ -28,8 +37,9 @@ body {
     gap:10px;
     line-height: 18px;
     color: #ffffff;
-    background-color: black;
+    background-color: rgb(19,19,26);
     padding: 20px;
+    border-radius: 10px;
 }
 
 .legend i {
@@ -38,10 +48,31 @@ body {
     border-radius: 100px;
     float: left;
     margin-right: 8px;
-    /* opacity: 0.7; */
 }
 
 .legend-item{
     display: flex;
+    flex-direction: row;
     
+}
+
+.legend-title{
+    font-size: 1.2em;
+    margin: 0;
+    padding-bottom: 5px;
+}
+
+.leaflet-top {
+    right: 10px !important;
+    float: right !important;
+}
+
+.leaflet-left {
+    right: 10px !important;
+    float: right !important;
+    bottom: 3% !important;
+}
+
+.leaflet-control{
+    float: right !important;
 }
