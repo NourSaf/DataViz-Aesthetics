@@ -1,6 +1,8 @@
 // import d3 library
 import * as d3 from "d3";
+// import leaflet library
 import "leaflet";
+// import leaflet.markercluster library
 import 'leaflet.markercluster';
 
 const zip_codes = [
@@ -15,6 +17,7 @@ const zip_codes = [
   '10019',
   '10036',
   '10199',
+  '10033',
 ];
 
 const app = d3
@@ -60,7 +63,7 @@ const map = L.map(mapElement.node()).setView([0, 0], 15);
 
 // Tile Layer
 const tileLayer = L.tileLayer("http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
-	minZoom: 14,
+	minZoom: 10,
 	maxZoom: 16,
     attribution: "ARCGIS ONLINE",
 });
@@ -74,22 +77,30 @@ const tnsIcon = L.icon({
     shadowSize:   [0, 0], 
     iconAnchor:   [20, 20],
     shadowAnchor: [0, 0], 
-    popupAnchor:  [20, 20]
+    popupAnchor:  [0, 0]
 });
 
-const tnsMarker = L.marker(tnsCoordinates, {icon: tnsIcon });
+const tnsMarker = L.marker(tnsCoordinates, { icon: tnsIcon });
 
-tnsMarker.bindPopup('marker')
+tnsMarker.bindPopup('The New School')
 
 const zipCodeGeoJson = await d3.json('./data/zip-code.json');
 console.log(zipCodeGeoJson)
 
 const zipCodeLayer = L.geoJSON(zipCodeGeoJson, {
   style: function (feature) {
+    // if (feature.properties['zcta'] === '10001')
     if (feature.properties['zcta'] === '10001')
+      return {
+        color: "green"
+      };
+    if (zip_codes.includes(feature.properties["zcta"]))
     return {
-      color: 'red'
+      color: 'red',
+      fillColor: "blue",
+      fillOpacity: 0.1
     };
+    
   },
   filter: function (feature) {
     return zip_codes.includes(feature.properties["zcta"]);

@@ -169,6 +169,7 @@ L.Control.ResetButton = L.Control.extend({
   },
   onRemove: function (map) {},
 });
+
 const resetButton = new L.Control.ResetButton();
 resetButton.addTo(map);
 
