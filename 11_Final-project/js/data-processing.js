@@ -30,4 +30,9 @@ ethnicity: ethnicity,
 console.log("This is chart's one object",data_object)
 
 
-//second chart
+//second chart 
+//second chart https://d3js.org/d3-shape/stack#stackOffsetWiggle
+//https://observablehq.com/@d3/stacked-bar-chart/2
+
+
+//d3 extent use in scales https://snyk.io/advisor/npm-package/d3/functions/d3.extent
