@@ -30,6 +30,4 @@ ethnicity: ethnicity,
 console.log("This is chart's one object",data_object)
 
 
-
-
 //second chart
