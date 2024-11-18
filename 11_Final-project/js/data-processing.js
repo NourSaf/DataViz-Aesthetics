@@ -35,12 +35,12 @@ console.log("This is chart's one object",data_object)
 //see documenation to create a stacked bar chart
 //https://observablehq.com/@d3/stacked-bar-chart/2
 
-//second chart 
+//second chart
 //second chart https://d3js.org/d3-shape/stack#stackOffsetWiggle
 //steam graph that shows 10 years from 2010 to 2020 and compliant type
 //Steamgraph documentation https://observablehq.com/@d3/streamgraph/2
 //Stacking variations https://d3js.org/d3-shape/stack#stackOffsetWiggle
- 
+
 // +d ensures to treat the year as number 
 const years = data.filter((d) => +d.year_received >= 2010).sort((a,b) => a.year_received - b.year_received) 
 console.log("this is year 2020",years)
@@ -68,8 +68,6 @@ console.log("this is my year-rank object",year_rank_object)
 //third chart
 //fado_type count and allegation for more understanding what each officer has done. 
 // hierarchy https://d3js.org/d3-hierarchy
-
-
 
 
 /*
