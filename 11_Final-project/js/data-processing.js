@@ -91,8 +91,11 @@ console.log("This is my bubbel chart object",bubbelChartData)
 
 
 //Fourth Chart 
-
 //Scatterplot data preparation for year_received and year_closed
+
+//filter 10 years from 2009 to 2019 
+
+// const years_filter = 
 const scatter_data = d3.rollup(data,
     (v) => v.length,
     (d) => +d.year_received,
@@ -100,18 +103,16 @@ const scatter_data = d3.rollup(data,
 );
 
 const scatter_data_array = Array.from(scatter_data, ([year_received, year_closed]) => ({
-    year_received: year_received,
-    year_closed: year_closed
+    year: year_received,
+    // year_closed: year_closed
+    ...Object.fromEntries(year_closed)
 }));
 
 console.log("Scatterplot data", scatter_data_array);
 
 
 
-
-
-
-
+// for the time started and time closed x axes -> time closed and y axes -> time opened
 
 
 /*
