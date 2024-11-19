@@ -117,5 +117,6 @@ console.log("Scatterplot data", scatter_data_array);
 /*
 Functions to use in this assignment
 d3.extent() -> use in scales https://snyk.io/advisor/npm-package/d3/functions/d3.extent
+https://observablehq.com/@mbostock/phases-of-the-moon
 */
 
