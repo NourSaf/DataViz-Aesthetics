@@ -92,6 +92,19 @@ console.log("This is my bubbel chart object",bubbelChartData)
 
 //Fourth Chart 
 
+//Scatterplot data preparation for year_received and year_closed
+const scatter_data = d3.rollup(data,
+    (v) => v.length,
+    (d) => +d.year_received,
+    (d) => +d.year_closed
+);
+
+const scatter_data_array = Array.from(scatter_data, ([year_received, year_closed]) => ({
+    year_received: year_received,
+    year_closed: year_closed
+}));
+
+console.log("Scatterplot data", scatter_data_array);
 
 
 
