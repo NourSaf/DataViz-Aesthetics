@@ -36,9 +36,10 @@ const chartOne_dataObject  = chart_one_processed
     .filter(d => d.ethnicity !== '')
     .flatMap(d => 
         Object.entries(d)
-            .filter(([key]) => key !== 'ethnicity').map(([gender, total]) => ({
+            .filter(([key]) => key !== 'ethnicity' && (key === 'Male' || key === 'Female'))
+            .map(([gender, total]) => ({
                 ethnicity: d.ethnicity,
-                gender: gender === '' ? 'Unkown' : gender,
+                gender: gender,
                 total: total
     }))
 )
@@ -65,6 +66,7 @@ const stacked = d3.stack()
 console.log('This is Stacked')
 console.log(stacked)
 
+//
 const xScale = d3.scaleLinear()
     .domain(d3.extent(stacked.flat(2)))
     .range([MARGINS.LEFT, WIDTH - MARGINS.RIGHT])
@@ -75,3 +77,38 @@ const yScale = d3.scaleBand()
     .padding(0.2)
 console.log("yScale")
 console.log(yScale.domain())
+
+
+const ChartOneColor = d3.scaleOrdinal()
+    .domain(stacked.map(d => d.key))
+    .range(["#ffeda0","#feb24c","#f03b20"]);
+console.log("Colors Check", ChartOneColor.range())
+
+const chartOneContainer = d3.select('#ChartOne')
+    .append('svg')
+    .attr('width', WIDTH)
+    .attr('height', HEIGHT)
+    .attr('viewBox', [0, 0, WIDTH, HEIGHT])
+
+// Append the horizontal axis.
+chartOneContainer.append("g")
+    .attr("transform", `translate(0,${HEIGHT - MARGINS.BOTTOM})`)
+    .call(d3.axisBottom(xScale).tickSizeOuter(0))
+
+// Append the vertical axis.
+chartOneContainer.append("g")
+    .attr("transform", `translate(${MARGINS.LEFT},0)`)
+    .call(d3.axisLeft(yScale).ticks(null, "s"))
+
+chartOneContainer.append('g')
+    .selectAll('g.stacks')
+    .data(stacked)
+    .join('g')
+    .attr('fill', ({key}) => ChartOneColor(key))
+        .selectAll('rect')
+        .data(d => d)
+        .join('rect')
+        .attr('x', ([x1])=> xScale(x1))
+        .attr('y', ({data:[key]}) => yScale(key))
+            .attr('width', ([x1, x2]) => xScale(x2) - xScale(x1))
+            .attr('height', yScale.bandwidth())

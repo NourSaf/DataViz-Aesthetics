@@ -1,1 +1,16 @@
 
+body{
+    background-color: rgb(11, 2, 16);
+    font-family: monospace;
+}
+
+.chartContainer{
+    display: flex;
+    flex-direction: column;
+    color: white;
+    padding: 40px;
+}
+
+.title{
+    padding-bottom: 20px;
+}
