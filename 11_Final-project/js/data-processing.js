@@ -27,7 +27,7 @@ function condition (d) {
 }
 
 const filteredData_chartOne = data.filter(condition)
-console.log(" This is filteredData_chartOne", filteredData_chartOne)
+// console.log(" This is filteredData_chartOne", filteredData_chartOne)
 
 const ethnicity_gender = d3.rollup(filteredData_chartOne,
     (v) => v.length,
@@ -49,7 +49,7 @@ const chart_one_processed =  Array.from(ethnicity_gender,([ethnicity, gender]) =
         }
     )
 )
-console.log("This is data procesed",chart_one_processed)
+// console.log("This is data procesed",chart_one_processed)
 
 const chartOneData  = chart_one_processed
     .flatMap(d => 
@@ -61,7 +61,7 @@ const chartOneData  = chart_one_processed
                 total: total
     }))
 )
-console.log("this is ChartOne Data Object structure", chartOneData)
+// console.log("this is ChartOne Data Object structure", chartOneData)
 
 //------------------------------------------
 // For stacked_chartOne bar chart or steamgraphs we should use stacked_chartOne. 
@@ -82,12 +82,12 @@ const chartOne_grouped = d3.flatRollup(
         ),
     yValue_chartOne,
 )
-console.log("This is chartOne_grouped data: ",chartOne_grouped)
+// console.log("This is chartOne_grouped data: ",chartOne_grouped)
 
 const stacked_chartOne = d3.stack()
     .keys(chartOne_grouped[0][1].keys())
     .value((d, key) => d[1].get(key))(chartOne_grouped)
-console.log('This is stacked_chartOne',stacked_chartOne)
+// console.log('This is stacked_chartOne',stacked_chartOne)
 
 //------------------------------------------------------------------------------------
 // Setting up scales, xScale_chartOne, yScale_chartOne and colorScale_chartOne
@@ -188,7 +188,7 @@ const legend_chartOne = chartOneContainer.append('g')
 
 //Filter the years we want to map
 const years_secondChart = data
-    .filter((d) => +d.year_received >= 2009 && +d.year_received < 2020)
+    .filter((d) =>  +d.year_received < 2019)
     .sort((a,b) => a.year_received - b.year_received) 
 
 
@@ -252,5 +252,105 @@ const stacked_secondChart = d3.stack()
 console.log("This is second Chart Stacked", stacked_secondChart)
 
 
-const acsessor = secondChart_group[0][1].keys()
-console.log(acsessor)
+//------------------------------------------------------------------------------------
+// Setting up scales for the second chart
+//------------------------------------------------------------------------------------
+const sec_WIDTH = 1200;
+const sec_HEIGHT = 600;
+const sec_MARGINS = {
+    TOP:    10,
+    RIGHT:  10,
+    BOTTOM: 20,
+    LEFT:   40,
+};
+
+const xScale_secondChart = d3.scaleUtc()
+    .domain(d3.extent(secondChartData, d => +d.date ))
+    .range([sec_MARGINS.LEFT, sec_WIDTH - sec_MARGINS.RIGHT]);
+
+const yScale_secondChart = d3.scaleLinear()
+    .domain(d3.extent(stacked_secondChart.flat(2)))
+    .rangeRound([sec_HEIGHT - sec_MARGINS.BOTTOM, sec_MARGINS.TOP]);
+
+const colorScale_secondChart = d3.scaleOrdinal()
+    .domain(stacked_secondChart.map(d => d.key))
+    .range(d3.schemeTableau10);
+
+//we nead an area for stream graphs 
+const area_secondChart = d3.area()
+    .x( d => xScale_secondChart(d.data[0]))
+    .y0(d => yScale_secondChart(d[0]))
+    .y1(d => yScale_secondChart(d[1]));
+
+const sec_chartContainer = d3.select('#chartTow')
+    .append('svg')
+    .attr('width', sec_WIDTH)
+    .attr('height', sec_HEIGHT)
+    .attr('viewBox', [0,0, sec_WIDTH, sec_HEIGHT])
+
+//Y axes 
+sec_chartContainer.append('g')
+    .attr('transform', `translate(${sec_MARGINS.LEFT}, 0)`)
+    .call(d3.axisLeft(yScale_secondChart).ticks(sec_HEIGHT/80).tickFormat((d) => Math.abs(d).toLocaleString("en-US")))
+    .call(g => g.select('.dmian').remove())
+    .call(g => g.selectAll('.tick line').clone()
+        .attr('x2', sec_WIDTH - sec_MARGINS.LEFT - sec_MARGINS.RIGHT)
+        .attr('strock-opacity',0.1)
+    )
+    .call(d => d.append("text")
+        .attr("x", -sec_MARGINS.LEFT)
+        .attr("y", 10)
+        .attr("fill", "currentColor")
+        .attr("text-anchor", "start")
+        .text("↑ FADO Type")
+    )
+
+// X axes
+sec_chartContainer.append("g")
+    .attr("transform", `translate(0,${sec_HEIGHT - sec_MARGINS.BOTTOM})`)
+    //xScale_secondChart
+    .call(d3.axisBottom(xScale_secondChart).tickSizeOuter(0))
+    .call(g => g.select(".domain").remove());
+
+// append path for each stacked element
+sec_chartContainer.append('g')
+    .selectAll()
+    .data(stacked_secondChart)
+    .join('path')
+        .attr('fill', d => colorScale_secondChart(d.key))
+        .attr('d', area_secondChart)
+    .append('title')
+        .text(d => d.key)
+
+
+//------------------------------------------------------------------------------------
+// Adding a sec_legend
+//------------------------------------------------------------------------------------
+
+
+const sec_legend = sec_chartContainer.append('g')
+        .attr('class', 'second-legend')  
+        // .attr("text-anchor", "start")
+        // .attr("x", )
+        .selectAll('g')
+        .data(stacked_secondChart.map(d => d.key))
+        .enter()
+        .append('g')
+        .attr("transform", (_, i) => `translate(0,${i * 20})`)
+        
+
+    sec_legend.append('rect')
+        .attr('x', sec_MARGINS.LEFT + 50)
+        .attr("width", 15)
+        .attr("height", 15)
+        .attr("fill", colorScale_secondChart)
+
+    sec_legend.append('text')
+        .attr('fill', 'white')
+        .attr('x', sec_MARGINS.LEFT + 70)
+        .attr('y', 11)
+        .text(d => d)
+    
+//------------------------------------------------------------------------------------
+// Note: every FADO type should be explaind with text. 
+//------------------------------------------------------------------------------------
