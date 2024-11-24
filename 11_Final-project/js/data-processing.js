@@ -41,11 +41,7 @@ const chartOne_dataObject  = chart_one_processed
     }))
 )
 
-console.log("this is male Values", chartOne_dataObject)
-
-
-
-
+console.log("this is ChartOne Data Object Values", chartOne_dataObject)
 
 
 //see documenation to create a stacked bar chart
@@ -60,15 +56,86 @@ const MARGINS = {
     LEFT:   40,
 };
 
-// const series = d3.stack()
-//     .keys(d3.union(...chart_one_processed.map(d => Object.keys(d).filter(key => key !== 'ethnicity' && key !== ""))))
-//     .value(([, D], key) => D[key] || 0); // get value for each series key and stack
-//     (d3.index(chart_one_processed, d => d.ethnicity, d => Object.keys(d)));
-
-
-
+//stacked barchart 
+//geting the keys and vlaues for the values
+//stack should be fixed -> it's returning a 0,0 key and not the actual values-
 const series = d3.stack()
     .keys(d3.union(chartOne_dataObject.map(d => d.gender)))
     .value((d, key) => d[key] || 0) // get value for each series key and stack
     (d3.group(chartOne_dataObject, d => d.ethnicity));
-    
+
+console.log("This is series", series)
+
+const group  = d3.union(chartOne_dataObject.map(d => d.gender))
+
+console.log("This is keys", group)
+
+//setting up the axes 
+// x axes 
+const xAxes = d3.scaleBand()
+    .domain(d3.groupSort(chartOne_dataObject, D => -d3.sum(D, d => d.total), d => d.ethnicity))
+    .range([MARGINS.LEFT, WIDTH - MARGINS.RIGHT])
+    .padding(0.1);
+// y axes 
+const yAxes = d3.scaleLinear()
+    .domain([0, d3.sum(chartOne_dataObject, d => d.total)])
+    .rangeRound([HEIGHT - MARGINS.BOTTOM, MARGINS.TOP]);
+
+    console.log("yAxes Domain Check",yAxes.domain())
+
+const ChartOneColor = d3.scaleOrdinal()
+    .domain(series.map(d => d.key))
+    .range(d3.schemeSpectral[series.length]);
+console.log("Colors Check", ChartOneColor.range())
+
+const chartOneContainer = d3.select('#ChartOne')
+    .append('svg')
+    .attr('width', WIDTH)
+    .attr('height', HEIGHT)
+    .attr('viewBox', [0, 0, WIDTH, HEIGHT])
+
+// Append the horizontal axis.
+chartOneContainer.append("g")
+    .attr("transform", `translate(0,${HEIGHT - MARGINS.BOTTOM})`)
+    .call(d3.axisBottom(xAxes).tickSizeOuter(0))
+
+// Append the vertical axis.
+chartOneContainer.append("g")
+    .attr("transform", `translate(${MARGINS.LEFT},0)`)
+    .call(d3.axisLeft(yAxes).ticks(null, "s"))
+
+chartOneContainer.append('g')
+    .selectAll('g')
+    .data(series)
+    .enter().append('g')
+        .attr('fill', d => ChartOneColor(d.key))
+        .selectAll('rect')
+        .data(d => d)
+        .enter().append('rect')
+            .attr('x', d => xAxes(d.data.group))
+            .attr('y', d => yAxes(d[1]))
+            .attr('height', d => yAxes(d[0]) - yAxes(d[1]))
+            .attr('width', xAxes.bandwidth())
+
+// Add legend
+const legend = chartOneContainer.append("g")
+    .attr("font-family", "sans-serif")
+    .attr("font-size", 10)
+    .attr("text-anchor", "end")
+    .selectAll("g")
+    .data(group)
+    .enter().append("g")
+    .attr("transform", (d, i) => `translate(0,${i * 20})`);
+
+legend.append("rect")
+    .attr("x", WIDTH - 19)
+    .attr("width", 19)
+    .attr("height", 19)
+    .attr("fill", ChartOneColor);
+
+legend.append("text")
+    .attr("x", WIDTH - 24)
+    .attr("y", 9.5)
+    .attr("dy", "0.32em")
+    .text(d => d);
+
