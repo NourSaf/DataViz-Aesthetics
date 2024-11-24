@@ -352,5 +352,7 @@ const sec_legend = sec_chartContainer.append('g')
         .text(d => d)
     
 //------------------------------------------------------------------------------------
-// Note: every FADO type should be explaind with text. 
+// Note: every FADO type should be explaind with text.
+// https://www.youtube.com/playlist?list=PLdJuTVexUXU3pShDMI9kbRJ8QjfWCLcQ1 (Interaction)
+// https://www.youtube.com/watch?v=M3kbQnXeFnY
 //------------------------------------------------------------------------------------
