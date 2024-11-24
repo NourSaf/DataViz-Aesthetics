@@ -18,7 +18,7 @@ const data = await d3.csv('/data/data.csv')
 //------------------------------------------
 
 /* 
-The first chart is stacked barchart each bar should show ethnicity general counts and euch gender stacked within echnicity and gender accross each ethnicity 
+The first chart is stacked_chartOne barchart each bar should show ethnicity general counts and euch gender stacked_chartOne within echnicity and gender accross each ethnicity 
 first we have and we have mising values in the ethnicity we need to filter them out as well in the gender;
 */
 
@@ -49,6 +49,7 @@ const chart_one_processed =  Array.from(ethnicity_gender,([ethnicity, gender]) =
         }
     )
 )
+console.log("This is data procesed",chart_one_processed)
 
 const chartOneData  = chart_one_processed
     .flatMap(d => 
@@ -63,55 +64,54 @@ const chartOneData  = chart_one_processed
 console.log("this is ChartOne Data Object structure", chartOneData)
 
 //------------------------------------------
-// For stacked bar chart or steamgraphs we should use stacked. 
-// Stacked needs a map with keys and values. I will use flatRollup
-// to construct the correct data structre to use in stacked 
+// For stacked_chartOne bar chart or steamgraphs we should use stacked_chartOne. 
+// stacked_chartOne needs a map with keys and values. I will use flatRollup
+// to construct the correct data structre to use in stacked_chartOne 
 //------------------------------------------
 
 //values to use on each axes 
-const xValue     = d => d.total;
-const yValue     = d => d.ethnicity;
-const colorValue = d => d.gender;
+const xValue_chartOne     = d => d.total;
+const yValue_chartOne     = d => d.ethnicity;
+const colorValue_chartOne = d => d.gender;
 
-const grouped = d3.flatRollup(
+const chartOne_grouped = d3.flatRollup(
     chartOneData,
     (values) => 
         new Map(
-            values.map((d) => [colorValue(d), xValue(d)]),
+            values.map((d) => [colorValue_chartOne(d), xValue_chartOne(d)]),
         ),
-    yValue,
+    yValue_chartOne,
 )
-console.log("This is grouped data: ",grouped)
+console.log("This is chartOne_grouped data: ",chartOne_grouped)
 
-
-const stacked = d3.stack()
-    .keys(grouped[0][1].keys())
-    .value((d, key) => d[1].get(key))(grouped);
-console.log('This is Stacked',stacked)
+const stacked_chartOne = d3.stack()
+    .keys(chartOne_grouped[0][1].keys())
+    .value((d, key) => d[1].get(key))(chartOne_grouped)
+console.log('This is stacked_chartOne',stacked_chartOne)
 
 //------------------------------------------------------------------------------------
-// setting up scales, xScale, yScale and colorScale
+// Setting up scales, xScale_chartOne, yScale_chartOne and colorScale_chartOne
 //------------------------------------------------------------------------------------
 
-const xScale = d3.scaleLinear()
-    .domain(d3.extent(stacked.flat(2)))
+const xScale_chartOne = d3.scaleLinear()
+    .domain(d3.extent(stacked_chartOne.flat(2)))
     .range([MARGINS.LEFT, WIDTH - MARGINS.RIGHT])
-// console.log("Check xScale is working -> ",xScale.range())
+// console.log("Check xScale_chartOne is working -> ",xScale_chartOne.range())
 
-const yScale = d3.scaleBand()
-    .domain(chartOneData.map(yValue))
+const yScale_chartOne = d3.scaleBand()
+    .domain(chartOneData.map(yValue_chartOne))
     .range([HEIGHT - MARGINS.BOTTOM, MARGINS.TOP])
     .padding(0.2)
-// console.log("Check yScale is working -> ",yScale.domain())
+// console.log("Check yScale_chartOne is working -> ",yScale_chartOne.domain())
 
 
-const colorScale = d3.scaleOrdinal()
-    .domain(stacked.map(d => d.key))
+const colorScale_chartOne = d3.scaleOrdinal()
+    .domain(stacked_chartOne.map(d => d.key))
     .range(["#6e40aa","#4c6edb","#23abd8","#1ddfa3","#52f667","#aff05b"]);
-// console.log("Check if ColorScale is working", colorScale.domain())
+// console.log("Check if ColorScale_chartOne is working", colorScale_chartOne.domain())
 
 //------------------------------------------------------------------------------------
-// creating the bar using the processed data and scales ------
+// Creating the bar using the processed data and scales
 //------------------------------------------------------------------------------------
 
 const chartOneContainer = d3.select('#ChartOne')
@@ -123,12 +123,12 @@ const chartOneContainer = d3.select('#ChartOne')
 // Append the horizontal axis
 chartOneContainer.append("g")
     .attr("transform", `translate(0,${HEIGHT - MARGINS.BOTTOM})`)
-    .call(d3.axisBottom(xScale).tickSizeOuter(0))
+    .call(d3.axisBottom(xScale_chartOne).tickSizeOuter(0))
 
 // Append the vertical axis
 chartOneContainer.append("g")
     .attr("transform", `translate(${MARGINS.LEFT},0)`)
-    .call(d3.axisLeft(yScale).ticks(null, "s"))
+    .call(d3.axisLeft(yScale_chartOne).ticks(null, "s"))
 
 // chartOneContainer.selectAll(".domain").remove();
 // chartOneContainer.selectAll(".tick line").remove();
@@ -140,39 +140,117 @@ chartOneContainer.append("g")
 chartOneContainer.append('g')
     .attr("class", "chartOne-group")
     .selectAll('g.stacks')
-    .data(stacked)
+    .data(stacked_chartOne)
     .join('g')
     .attr('class', ({key}) => key)
-    .attr('fill', ({key}) => colorScale(key))
+    .attr('fill', ({key}) => colorScale_chartOne(key))
     .selectAll('rect')
         .data(d => d)
         .join('rect')
-        .attr('x', ([x1]) => xScale(x1))
-        .attr('y', ({data: [key]}) => yScale(key))
+        .attr('x', ([x1]) => xScale_chartOne(x1))
+        .attr('y', ({data: [key]}) => yScale_chartOne(key))
         .attr('class', ({data: [key]}) => key)
-        .attr('width', ([x1, x2]) => xScale(x2) - xScale(x1))
-        .attr('height', yScale.bandwidth())
+        .attr('width', ([x1, x2]) => xScale_chartOne(x2) - xScale_chartOne(x1))
+        .attr('height', yScale_chartOne.bandwidth())
 
 //------------------------------------------------------------------------------------
-// Adding a Legend 
+// Adding a Legend_chartOne //https://www.youtube.com/watch?v=lAOgD_udvTw adds hover effect 
 //------------------------------------------------------------------------------------
 
-const legend = chartOneContainer.append('g')
+const legend_chartOne = chartOneContainer.append('g')
         .attr("text-anchor", "end")
         .selectAll('g')
-        .data(stacked.map(d => d.key))
+        .data(stacked_chartOne.map(d => d.key))
         .enter()
         .append('g')
         .attr("transform", (_, i) => `translate(0,${i * 20})`); 
 
-     legend.append('rect')
+     legend_chartOne.append('rect')
         .attr('x', WIDTH - 19)
         .attr("width", 19)
         .attr("height", 19)
-        .attr("fill", colorScale)
+        .attr("fill", colorScale_chartOne)
 
-     legend.append('text')
+     legend_chartOne.append('text')
         .attr('fill', 'white')
         .attr('x', WIDTH - 30)
         .attr('y', 9.5)
         .text(d => d)
+
+
+//------------------------------------------------------------------------------------
+// Second Chart: Steam Graph chart
+// Shows 10 years_secondChart from 2010 to 2020 and compliant type
+// references 
+// https://observablehq.com/@d3/streamgraph/2
+// https://d3js.org/d3-shape/stack#stackOffsetWiggle
+//------------------------------------------------------------------------------------
+
+//Filter the years we want to map
+const years_secondChart = data
+    .filter((d) => +d.year_received >= 2009 && +d.year_received < 2020)
+    .sort((a,b) => a.year_received - b.year_received) 
+
+
+const year_type = d3.rollup(
+    years_secondChart,
+        (v) => v.length,
+        (d) => d.year_received,
+        (e) => e.fado_type,
+)
+console.log("This is year type Map", year_type)
+
+//convert the map to an object
+const year_type_objects = Array.from(year_type, ([year,type])=>(
+        {
+            date:year,
+            ...Object.fromEntries(type)
+        }
+    )
+)
+console.log("This is year type array of objects", year_type_objects)
+
+const secondChartData = year_type_objects
+    .flatMap(d => Object.entries(d)
+        .filter(([key]) => key !== 'date')
+        .map(([type, total]) => ({
+            date: d.date, 
+            type:type, 
+            total:total
+        })))
+
+console.log("This is second chart Data", secondChartData)
+
+//------------------------------------------------------
+// Prepare data for stacked and get the values for axex
+//------------------------------------------------------
+
+//get the values for the axes 
+
+const xValue_secondChart     = d => d.total;
+const yValue_secondChat      = d => d.date;
+const colorValue_secondCahrt = d => d.type;
+
+//Prepare a map for the stacked function 
+const secondChart_group = d3.flatRollup(
+    secondChartData, 
+    (values) => 
+        new Map (
+            values.map((d) => [colorValue_secondCahrt(d), xValue_secondChart(d)]) 
+        ),
+        yValue_secondChat,
+)
+console.log("This is secondChart_Group", secondChart_group)
+
+//Stacked function 
+//Here for the steam graph we need .offset and .order 
+const stacked_secondChart = d3.stack()
+    .offset(d3.stackOffsetWiggle)
+    .order(d3.stackOrderInsideOut)
+    .keys(secondChart_group[0][1].keys())
+    .value((d, key) => d[1].get(key))(secondChart_group)
+console.log("This is second Chart Stacked", stacked_secondChart)
+
+
+const acsessor = secondChart_group[0][1].keys()
+console.log(acsessor)
