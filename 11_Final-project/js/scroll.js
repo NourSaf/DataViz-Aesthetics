@@ -1,5 +1,5 @@
-	// using d3 for convenience
-    import * as d3 from "d3";
+// using d3 for convenience
+import * as d3 from "d3";
 
 const WIDTH = 800;
 const HEIGHT = 500;
@@ -285,7 +285,7 @@ const sec_chartContainer = d3.select('#chartTwo')
     .attr('height', sec_HEIGHT)
     .attr('viewBox', [0,0, sec_WIDTH, sec_HEIGHT])
 
-//Y axes 
+//Y axes
 sec_chartContainer.append('g')
     .attr('transform', `translate(${sec_MARGINS.LEFT}, 0)`)
     .call(d3.axisLeft(yScale_secondChart).ticks(sec_HEIGHT/80).tickFormat((d) => Math.abs(d).toLocaleString("en-US")))
@@ -415,21 +415,38 @@ function init() {
 // kick things off
 init();
 
+const introtext = d3.create('div')
+
+const fadeIn = g => g.style('opacity', 0).transition().duration(800).style('opacity', 1)
+
+//This dataset, published by ProPublica, features records from NYC’s Civilian Complaint Review Board on substantiated allegations against NYPD officers. Covering cases from September 1985 to January 2020, it includes only closed cases where complaints were verified, excluding unfounded allegations.
+
 //adding the charts to scrollama 
 function responseChage (response){
-    figure.select('.div_0').remove();
     if (response.index === 0) {
-        figure.append('div').attr('class','chart').append(() => chartOneContainer.node());
-    } else if (response.index === 1) {
+        figure.select('.div_0').style('opacity', 1);
+    }   
+    if (response.index === 1) {
+        figure.append('div').attr('class','chart').append(() => chartOneContainer.node()).call(fadeIn);
+        figure.select('.div_0').style('opacity', 0);
+    } else if (response.index === 2) {
         figure.append('div').attr('class','chart').append(() => sec_chartContainer.node());
     }
 }
 
 function responseChangeExit(response){
-    
-    if (response.index === 0 ){
+    if( response.index === 0){
+        figure.select('.div_0').style('opacity', 1);
+
+    } else if ( response.index >= 1){
+        figure.select('.div_0').style('opacity', 0);
+    }
+    if (response.index === 1 ){
         figure.select('.chart').remove()
-    } else if (response.index === 1) {
+        
+
+    } else if (response.index === 2) {
         figure.select('.chart').remove()
     }
 }
+

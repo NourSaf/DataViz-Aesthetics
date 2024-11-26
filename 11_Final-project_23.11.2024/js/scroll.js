@@ -1,5 +1,4 @@
-	// using d3 for convenience
-    import * as d3 from "d3";
+import * as d3 from "d3";
 
 const WIDTH = 800;
 const HEIGHT = 500;
