@@ -4,18 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style/global.css">
+    
     <title>Document</title>
 </head>
 <body>
 
-    <div id="ChartOne" class="chartContainer">
-        <div class="title">Ethnicity and Gender Bar Chart</div>
-    </div>
+    
+    <main>
+        <section id="intro">
+			<h1 class="intro__hed">POLICE USE <br>OF POWER <br>IN NEW YORK</h1>
+			<p class="intro__dek">
+                This dataset, published by ProPublica, features records from NYC’s Civilian Complaint Review Board on substantiated allegations against NYPD officers. Covering cases from September 1985 to January 2020, it includes only closed cases where complaints were verified, excluding unfounded allegations.			</p>
+		</section>
+        <section id="scrolly">
+			<figure>
+				<!-- <p> Intro</p> -->
+			</figure>
 
-    <div id="chartTow" class="chartContainer">
-        <div class="title">Year and types of the values</div>
+			<article>
+				<div class="step" data-step="1">
+					<p>First Chart</p>
+					<div class="title">Ethnicity and Gender Stacked Bar Chart</div>
+				</div>
+				<div class="step" data-step="2">
+					<p>STEP 2</p>
+				</div>
+				<div class="step" data-step="3">
+					<p>STEP 3</p>
+				</div>
+				<div class="step" data-step="4">
+					<p>STEP 4</p>
+				</div>
+			</article>
+		</section>
+    </main>
+
+
+    <div class="landing-container"></div>
+    <div class="viz-container"></div>
+
+    <div class="main-container">
+        <div id="ChartOne" class="chartContainer"></div>
+        <div id="chartTwo" class="chartContainer"></div>
     </div>
-    <script src="/js/data-processing.js" type="module" async></script>
+    <script src="./js/scroll.js" type="module" ></script>
+    <script src="./js/data-processing.js" type="module" async></script>
+    <script src="./js/layout.js" type="module" async></script>
+    <script src="https://unpkg.com/d3@5.9.1/dist/d3.min.js"></script>
+    <script src="./js/scrollama.min.js"></script>
+
     
 </body>
 </html>

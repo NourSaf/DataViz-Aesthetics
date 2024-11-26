@@ -1,0 +1,33 @@
+
+body{
+    background-color: #111111;
+    font-family: monospace;
+    color: white;
+}
+
+#intro {
+    max-width: 40rem;
+    margin: 0rem auto;
+    text-align: center;
+    height: 100vh;
+    
+}
+
+.intro__hed {
+  font-size: 8em;
+  margin: 15.5rem -2rem 0.1rem -2rem;
+}
+
+.intro__dek {
+  color: #8a8a8a;
+  font-size: 0.8rem;
+  line-height: 150%;
+}
+
+.chartContainer{
+    display: flex;
+    flex-direction: column;
+    color: white;
+    padding: 40px;
+    align-items: center;
+}

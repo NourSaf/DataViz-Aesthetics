@@ -107,7 +107,8 @@ const yScale_chartOne = d3.scaleBand()
 
 const colorScale_chartOne = d3.scaleOrdinal()
     .domain(stacked_chartOne.map(d => d.key))
-    .range(["#6e40aa","#4c6edb","#23abd8","#1ddfa3","#52f667","#aff05b"]);
+    .range(["#F18E2C", "#E15759"]);
+    
 // console.log("Check if ColorScale_chartOne is working", colorScale_chartOne.domain())
 
 //------------------------------------------------------------------------------------
@@ -152,6 +153,12 @@ chartOneContainer.append('g')
         .attr('class', ({data: [key]}) => key)
         .attr('width', ([x1, x2]) => xScale_chartOne(x2) - xScale_chartOne(x1))
         .attr('height', yScale_chartOne.bandwidth())
+        .on('mouseover', function(_, d) {
+            d3.select(this).attr('stroke', 'black').attr('opacity', 0.4);
+        })
+        .on('mouseout', function(event, d) {
+            d3.select(this).attr('opacity', 1);
+        });
 
 //------------------------------------------------------------------------------------
 // Adding a Legend_chartOne //https://www.youtube.com/watch?v=lAOgD_udvTw adds hover effect 
@@ -282,7 +289,7 @@ const area_secondChart = d3.area()
     .y0(d => yScale_secondChart(d[0]))
     .y1(d => yScale_secondChart(d[1]));
 
-const sec_chartContainer = d3.select('#chartTow')
+const sec_chartContainer = d3.select('#chartTwo')
     .append('svg')
     .attr('width', sec_WIDTH)
     .attr('height', sec_HEIGHT)
@@ -356,3 +363,4 @@ const sec_legend = sec_chartContainer.append('g')
 // https://www.youtube.com/playlist?list=PLdJuTVexUXU3pShDMI9kbRJ8QjfWCLcQ1 (Interaction)
 // https://www.youtube.com/watch?v=M3kbQnXeFnY
 //------------------------------------------------------------------------------------
+
