@@ -1,5 +1,3 @@
-// using d3 for convenience
-import { contains } from "@amcharts/amcharts5/.internal/core/util/Utils";
 import * as d3 from "d3";
 
 const WIDTH = 1100;
