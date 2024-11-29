@@ -1,3 +1,4 @@
+// using d3 for convenience
 import * as d3 from "d3";
 
 const WIDTH = 800;
@@ -10,8 +11,7 @@ const MARGINS = {
 };
 
 const data = await d3.csv('/data/data.csv')
-////console.log("This is my data",data)
-
+//console.log("This is my data",data)
 
 //------------------------------------------
 // FIRST CHART DATA PROCESSING
@@ -27,14 +27,14 @@ function condition (d) {
 }
 
 const filteredData_chartOne = data.filter(condition)
-// //console.log(" This is filteredData_chartOne", filteredData_chartOne)
+// console.log(" This is filteredData_chartOne", filteredData_chartOne)
 
 const ethnicity_gender = d3.rollup(filteredData_chartOne,
     (v) => v.length,
     (d) => d.complainant_ethnicity,
     (e) => e.complainant_gender
 );
-// //console.log("This is Ethnictiy/Gender Map: ", ethnicity_gender)
+// console.log("This is Ethnictiy/Gender Map: ", ethnicity_gender)
 
 /* 
 /Converting the d3 InternMap to array of objects 
@@ -49,7 +49,7 @@ const chart_one_processed =  Array.from(ethnicity_gender,([ethnicity, gender]) =
         }
     )
 )
-// //console.log("This is data procesed",chart_one_processed)
+// console.log("This is data procesed",chart_one_processed)
 
 const chartOneData  = chart_one_processed
     .flatMap(d => 
@@ -61,7 +61,8 @@ const chartOneData  = chart_one_processed
                 total: total
     }))
 )
-// //console.log("this is ChartOne Data Object structure", chartOneData)
+
+// console.log("this is ChartOne Data Object structure", chartOneData)
 
 //------------------------------------------
 // For stacked_chartOne bar chart or steamgraphs we should use stacked_chartOne. 
@@ -82,12 +83,12 @@ const chartOne_grouped = d3.flatRollup(
         ),
     yValue_chartOne,
 )
-// //console.log("This is chartOne_grouped data: ",chartOne_grouped)
+// console.log("This is chartOne_grouped data: ",chartOne_grouped)
 
 const stacked_chartOne = d3.stack()
     .keys(chartOne_grouped[0][1].keys())
     .value((d, key) => d[1].get(key))(chartOne_grouped)
-// //console.log('This is stacked_chartOne',stacked_chartOne)
+// console.log('This is stacked_chartOne',stacked_chartOne)
 
 //------------------------------------------------------------------------------------
 // Setting up scales, xScale_chartOne, yScale_chartOne and colorScale_chartOne
@@ -96,20 +97,20 @@ const stacked_chartOne = d3.stack()
 const xScale_chartOne = d3.scaleLinear()
     .domain(d3.extent(stacked_chartOne.flat(2)))
     .range([MARGINS.LEFT, WIDTH - MARGINS.RIGHT])
-// //console.log("Check xScale_chartOne is working -> ",xScale_chartOne.range())
+// console.log("Check xScale_chartOne is working -> ",xScale_chartOne.range())
 
 const yScale_chartOne = d3.scaleBand()
     .domain(chartOneData.map(yValue_chartOne))
     .range([HEIGHT - MARGINS.BOTTOM, MARGINS.TOP])
     .padding(0.2)
-// //console.log("Check yScale_chartOne is working -> ",yScale_chartOne.domain())
+// console.log("Check yScale_chartOne is working -> ",yScale_chartOne.domain())
 
 
 const colorScale_chartOne = d3.scaleOrdinal()
     .domain(stacked_chartOne.map(d => d.key))
     .range(["#F18E2C", "#E15759"]);
     
-// //console.log("Check if ColorScale_chartOne is working", colorScale_chartOne.domain())
+// console.log("Check if ColorScale_chartOne is working", colorScale_chartOne.domain())
 
 //------------------------------------------------------------------------------------
 // Creating the bar using the processed data and scales
@@ -138,12 +139,9 @@ chartOneContainer.append("g")
 // Nesting the bars in groups for each gender a group 
 //------------------------------------------------------------------------------------
 
-function onHover (d){
-    return d[1] - d[0]
-}
-
 chartOneContainer.append('g')
     .attr("class", "chartOne-group")
+    
     .selectAll('g.stacks')
     .data(stacked_chartOne)
     .join('g')
@@ -158,19 +156,13 @@ chartOneContainer.append('g')
         .attr('width', ([x1, x2]) => xScale_chartOne(x2) - xScale_chartOne(x1))
         .attr('height', yScale_chartOne.bandwidth())
         .on('mouseover', function(_, d) {
-            d3.select(this).attr('opacity', 0.4);
-            //console.log(onHover(d))
+            d3.select(this).attr('stroke', 'black').attr('opacity', 0.4);
         })
         .on('mouseout', function(event, d) {
             d3.select(this).attr('opacity', 1);
         });
 
-
-//------------------------------------------------------------------------------------
-// Adding a Legend_chartOne //https://www.youtube.com/watch?v=lAOgD_udvTw adds hover effect 
-//------------------------------------------------------------------------------------
-
-const legend_chartOne = chartOneContainer.append('g')
+        const legend_chartOne = chartOneContainer.append('g')
         .attr("text-anchor", "end")
         .selectAll('g')
         .data(stacked_chartOne.map(d => d.key))
@@ -191,14 +183,6 @@ const legend_chartOne = chartOneContainer.append('g')
         .text(d => d)
 
 
-//------------------------------------------------------------------------------------
-// Second Chart: Steam Graph chart
-// Shows 10 years_secondChart from 2010 to 2020 and compliant type
-// references 
-// https://observablehq.com/@d3/streamgraph/2
-// https://d3js.org/d3-shape/stack#stackOffsetWiggle
-//------------------------------------------------------------------------------------
-
 //Filter the years we want to map
 const years_secondChart = data
     .filter((d) =>  +d.year_received < 2019)
@@ -211,7 +195,7 @@ const year_type = d3.rollup(
         (d) => d.year_received,
         (e) => e.fado_type,
 )
-//console.log("This is year type Map", year_type)
+console.log("This is year type Map", year_type)
 
 //convert the map to an object
 const year_type_objects = Array.from(year_type, ([year,type])=>(
@@ -232,7 +216,7 @@ const secondChartData = year_type_objects
             total:total
         })))
 
-//console.log("This is second chart Data", secondChartData)
+console.log("This is second chart Data", secondChartData)
 
 //------------------------------------------------------
 // Prepare data for stacked and get the values for axex
@@ -253,7 +237,7 @@ const secondChart_group = d3.flatRollup(
         ),
         yValue_secondChat,
 )
-//console.log("This is secondChart_Group", secondChart_group)
+console.log("This is secondChart_Group", secondChart_group)
 
 //Stacked function 
 //Here for the steam graph we need .offset and .order 
@@ -262,15 +246,16 @@ const stacked_secondChart = d3.stack()
     .order(d3.stackOrderInsideOut)
     .keys(secondChart_group[0][1].keys())
     .value((d, key) => d[1].get(key))(secondChart_group)
-// //console.log("This is second Chart Stacked", stacked_secondChart)
+console.log("This is second Chart Stacked", stacked_secondChart)
+
 
 //------------------------------------------------------------------------------------
 // Setting up scales for the second chart
 //------------------------------------------------------------------------------------
-const sec_WIDTH = 1200;
+const sec_WIDTH = 900;
 const sec_HEIGHT = 600;
 const sec_MARGINS = {
-    TOP:    10,
+    TOP:    90,
     RIGHT:  10,
     BOTTOM: 20,
     LEFT:   40,
@@ -300,7 +285,7 @@ const sec_chartContainer = d3.select('#chartTwo')
     .attr('height', sec_HEIGHT)
     .attr('viewBox', [0,0, sec_WIDTH, sec_HEIGHT])
 
-//Y axes 
+//Y axes
 sec_chartContainer.append('g')
     .attr('transform', `translate(${sec_MARGINS.LEFT}, 0)`)
     .call(d3.axisLeft(yScale_secondChart).ticks(sec_HEIGHT/80).tickFormat((d) => Math.abs(d).toLocaleString("en-US")))
@@ -342,7 +327,7 @@ sec_chartContainer.append('g')
 const sec_legend = sec_chartContainer.append('g')
         .attr('class', 'second-legend')  
         // .attr("text-anchor", "start")
-
+        // .attr("x", )
         .selectAll('g')
         .data(stacked_secondChart.map(d => d.key))
         .enter()
@@ -372,7 +357,7 @@ const fado_alligation = d3.rollup(data,
     (d) => d.fado_type,
     (d) => d.allegation,
 )
-// console.log("This is FADO/sAllegation Map", fado_alligation)
+console.log("This is FADO/sAllegation Map", fado_alligation)
 
 //parent child chirarhy name and children
 const tree_data = Array.from(fado_alligation, ([type, allegation]) => (
@@ -386,14 +371,14 @@ const tree_data = Array.from(fado_alligation, ([type, allegation]) => (
         ))
     }
 ));
-// console.log("This is my bubbel chart object",tree_data)
+console.log("This is my bubbel chart object",tree_data)
 
 //------------------------------------------------------------------------------------
 // Creating a Treemap 
 //------------------------------------------------------------------------------------
 
-const treeH = 1200; 
-const treeW = 1200;
+const treeH = 1150; 
+const treeW = 1150;
 const treeL = 100; 
 
 const tree_container = d3.select('#chartThree')
@@ -407,15 +392,14 @@ const tree_color = d3.scaleOrdinal(d3.schemeTableau10)
 //------------------------------------------------------------------------------------
 // setting the data up for a hierarchy chart use in this case treemap
 //------------------------------------------------------------------------------------
-
 const hierarchy = d3.hierarchy({children : tree_data})
     .sum(d => d.total)
     .sort((a,b) => b.value - a.value);
-// //console.log("hierarchy",hierarchy)
+console.log("hierarchy",hierarchy)
 
 
 const treemap = d3.treemap()
-    .size([treeW, treeH - treeL])
+    .size([treeW, treeH])
     .paddingInner(1)
     (hierarchy)
 
@@ -483,145 +467,110 @@ legend_tree.append('text')
     .attr('text-anchor', 'end')
     .text(d => d.data.name);
 
+//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+// scrollama function 
+//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+var main = d3.select("main");
+var scrolly = main.select("#scrolly");
+var figure = scrolly.select("figure");
+var article = scrolly.select("article");
+var step = article.selectAll(".step");
 
-//------------------------------------------------------------------------------------
-// Fourth Chart -> Bubbel chart -> prepare the data 
-//------------------------------------------------------------------------------------
+// initialize the scrollama
+var scroller = scrollama();
 
-//hierarchy -> police rank -> total abuse -> each type of abuse -> count of each abuse 
+// generic window resize listener event
+function handleResize() {
+    // 1. update height of step elements
+    //each overlay size relative to the widow size
+    var stepH = Math.floor(window.innerHeight * 0.5);
+    step.style("height", stepH + "px");
 
-function dataFilterCondition (d){
-    return d.rank_incident !== "Deputy Inspector"  && d.rank_incident !== "Chiefs and other ranks" && d.rank_incident !=="Deputy Inspector" && d.rank_incident !== "Inspector";
+    //main layer size and margins
+    var figureHeight = window.innerHeight / 1.2;
+    var figureMarginTop = (window.innerHeight - figureHeight) / 2;
+
+    figure
+        .style("height", figureHeight + "px")
+        .style("top", figureMarginTop + "px");
+        
+    // 3. tell scrollama to update new element dimensions
+    scroller.resize();
 }
-const filteredDataBubbel = data.filter(dataFilterCondition)
-const bubbelDataRollup = d3.rollup(filteredDataBubbel, 
-    (v) => v.length,
-    (d) => d.rank_incident,
-    (c) => c.fado_type,
- )
-// console.log("This is data", bubbelDataRollup)
 
-const bubbelMap = Array.from(bubbelDataRollup, ([rank, types]) => ({
-    rank:rank,
-    children: Array.from(types, ([type, total]) => ({
-        type:type,
-        total:total
-    }))
+// scrollama event handlers
+function handleStepEnter(response) {
+    console.log(response);
+
+    step.classed("is-active", function (d, i) {
+        return i === response.index;
+    });
     
-}))
-console.log("this is Ranks", bubbelMap)
+    responseChage(response)
 
-//––––––––––––––––––––––––––––––––––––––––––––––––––––––
-// Setup chart's dimentions 
-//––––––––––––––––––––––––––––––––––––––––––––––––––––––
+}
 
-const bubbelW = 800, bubbelH = 800;
+function handelStepExit (response) {
+    console.log(response)
+    responseChangeExit(response)
+}
+// .attr('class', `chart_${response.index}`)
 
-const bubbel_container = d3.select('#chartFour')
-    .append('svg')
-    .attr('width', bubbelW)
-    .attr('height', bubbelH)
-    .attr('viewBox', [0, 0, bubbelH, bubbelW])
+function init() {
+    // 1. force a resize on load to ensure proper dimensions are sent to scrollama
+    handleResize();
+    // 2. setup the scroller passing option this will also initialize trigger observations
+    // 3. bind scrollama event handlers (this can be chained like below)
+    scroller
+        .setup({
+            step: "#scrolly article .step",
+            offset: 0.5,
+            debug: false,
+        })
+        .onStepEnter(handleStepEnter)
+        .onStepExit(handelStepExit);
+}
 
-//––––––––––––––––––––––––––––––––––––––––––––––––––––––
-// Setup color scale
-//––––––––––––––––––––––––––––––––––––––––––––––––––––––
+// kick things off
+init();
 
-const bubbelColor = d3.scaleOrdinal(d3.schemeTableau10)
+const introtext = d3.create('div')
 
-//––––––––––––––––––––––––––––––––––––––––––––––––––––––
-// Setup hiererchy for the data and pack for the containment nesting 
-//––––––––––––––––––––––––––––––––––––––––––––––––––––––
+const fadeIn = g => g.style('opacity', 0).transition().duration(800).style('opacity', 1)
+const fadeOut = g => g.transition(900).style('opacity',0).remove()
 
-const bubbelHierarchy = d3.hierarchy({children : bubbelMap})
-    .sum(d => d.total)
-    .sort((a,b) => b.value - a.value)
+//This dataset, published by ProPublica, features records from NYC’s Civilian Complaint Review Board on substantiated allegations against NYPD officers. Covering cases from September 1985 to January 2020, it includes only closed cases where complaints were verified, excluding unfounded allegations.
 
-console.log("this is bubbel hieraaryl", bubbelHierarchy)
+//adding the charts to scrollama 
+function responseChage (response){
+    if (response.index === 0) {
+        figure.select('.div_0').style('opacity', 1);
+    }   
+    if (response.index === 1) {
+        figure.append('div').attr('class','chart').append(() => chartOneContainer.node()).call(fadeIn);
+        figure.select('.div_0').style('opacity', 0);
+    } else if (response.index === 2) {
+        figure.append('div').attr('class','chart').append(() => sec_chartContainer.node()).call(fadeIn);
+    } else if (response.index === 3){
+        figure.append('div').attr('class','chart').append(() => tree_container.node()).call(fadeIn);
+    }
+}
 
-const bubbelPack = data => d3.pack()
-    .size([bubbelW, bubbelH])
-    .padding(3)
-    (d3.hierarchy(data)
-        .sum(d => d.value)
-        .sort((a,b) => b.value - a.value)
-    );
+function responseChangeExit(response){
+    if( response.index === 0){
+        figure.select('.div_0').style('opacity', 1);
 
-const  root = bubbelPack(bubbelHierarchy)
-console.log("this is pack", root)
+    } else if ( response.index >= 1){
+        figure.select('.div_0').style('opacity', 0);
+    }
+    if (response.index === 1 ){
+        figure.select('.chart').call(fadeOut)
+        
 
-const packed = d3.pack()
-    .size([bubbelW, bubbelH])
-    .padding(3)
-    (bubbelHierarchy)
-console.log("This is packed", packed)
-
-const node = bubbel_container.selectAll("g")
-    .data(packed.descendants())
-    .enter().append("g")
-    .attr("transform", d => `translate(${d.x},${d.y})`);
-
-node.append("circle")
-    .attr("r", d => d.r)
-    .attr("fill", d => d.children ? bubbelColor(d.data.rank) : bubbelColor(d.data.type))
-    // .attr("stroke", d => d.children );
-
-node.append("text")
-    .attr("dy", "0.3em")
-    .attr("text-anchor", "middle")
-    .text(d => d.children ? "" : d.data.type)
-    .style("fill", "black");
-
-//------------------------------------------------------------------------------------
-// Adding a legend for the bubble chart
-//------------------------------------------------------------------------------------
-const uniqueTypes = Array.from(new Set(packed.descendants().filter(d => !d.children).map(d => d.data.type)));
-
-const legend_bubble = bubbel_container.append('g')
-    .attr('class', 'bubble-legend')
-    .selectAll('g')
-    .data(uniqueTypes)
-    .enter()
-    .append('g')
-    .attr('transform', (_, i) => `translate(0,${i * 20})`);
-
-legend_bubble.append('rect')
-    .attr('x', 20)
-    .attr('width', 20)
-    .attr('height', 20)
-    .attr('fill', d => bubbelColor(d));
-
-legend_bubble.append('text')
-    .attr('x', 60)
-    .attr('y', 10)
-    .attr('dy', '0.32em')
-    .attr('text-anchor', 'start')
-    .text(d => d)
-    .attr('fill', 'white');
-
-const legend_rank = bubbel_container.append('g')
-    .attr('class', 'rank-legend')
-    .selectAll('g')
-    .data(bubbelMap)
-    .enter()
-    .append('g')
-    .attr('transform', (_, i) => `translate(0, ${i * 20})`);
-
-legend_rank.append('rect')
-    .attr('x', 20)
-    .attr('y', 100)
-    .attr('width', 20)
-    .attr('height', 20)
-    .attr('fill', d => bubbelColor(d.rank));
-
-legend_rank.append('text')
-    .attr('x', 60)
-    .attr('y', 110)
-    .attr('dy', '0.32em')
-    .attr('text-anchor', 'start')
-    .text(d => d.rank)
-    .attr('fill', 'white');
-
-
-
+    } else if (response.index === 2) {
+        figure.select('.chart').call(fadeOut);
+    } else if (response.index === 3){
+        figure.select('.chart').call(fadeOut);
+    }
+}
 

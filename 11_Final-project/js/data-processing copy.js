@@ -36,16 +36,6 @@ console.log("This is chart's one object",data_object)
 
 
 
-
-
-
-
-
-
-
-
-
-
 //second chart
 //second chart https://d3js.org/d3-shape/stack#stackOffsetWiggle
 //steam graph that shows 10 years from 2010 to 2020 and compliant type
