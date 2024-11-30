@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-
 const WIDTH = 1100;
 const HEIGHT = 800;
 const MARGINS = {
@@ -9,7 +8,7 @@ const MARGINS = {
     LEFT:   40,
 };
 
-const data = await d3.csv('/data/data.csv')
+const data = await d3.csv('./data/data.csv')
 console.log("This is my data",data)
 
 //------------------------------------------
@@ -529,7 +528,7 @@ const bubbel_container = d3.select('#chartFour')
     .append('svg')
     .attr('width', bubbelW)
     .attr('height', bubbelH)
-    .attr('viewBox', [, 0, bubbelH , bubbelW])
+    .attr('viewBox', [0, 0, bubbelH , bubbelW])
 
 //––––––––––––––––––––––––––––––––––––––––––––––––––––––
 // Setup color scale

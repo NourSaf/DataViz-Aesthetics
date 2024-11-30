@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-	base: '/DataViz-Aesthetics/', // Replace with your repository name
+	base: '/Police-use-of-power-in-New-York/', // Replace with your repository name
 	build: {
 		target: 'esnext',
 	},
